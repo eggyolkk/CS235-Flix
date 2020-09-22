@@ -1,3 +1,5 @@
+import abc
+
 from cs235flix.domain.model import Actor, Genre, Director, Movie
 
 
@@ -11,6 +13,10 @@ class RepositoryException(Exception):
 
 
 class AbstractRepository(abc.ABC):
+    @abc.abstractmethod
+    def add_movie(self, movie: Movie):
+        """ Adds a Movie to the repository. """
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_movies(self, id: int) -> Movie:
@@ -25,13 +31,5 @@ class AbstractRepository(abc.ABC):
         """ Returns a list of Movies, whose ids match those in id_list, from the repository.
 
         If there are no matches, this method returns an empty list.
-        """
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_movies_ids_for_genre(self, genre_name: str):
-        """ Returns a list of ids representing Movies that are tagged by genre_name.
-
-        If there are Movies that are tagged by genre_name, this method returns an empty list.
         """
         raise NotImplementedError
