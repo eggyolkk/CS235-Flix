@@ -31,6 +31,7 @@ class Actor:
     def check_if_this_actor_worked_with(self, colleague) -> bool:
         return colleague in self._actor_colleagues
 
+
 class Genre:
     def __init__(
             self, genre_name: str
@@ -58,8 +59,8 @@ class Genre:
     def __hash__(self) -> str:
         return hash(self._genre_name)
 
-class Director:
 
+class Director:
     def __init__(self, director_full_name: str):
         if director_full_name == "" or type(director_full_name) is not str:
             self.__director_full_name = None
@@ -91,6 +92,7 @@ class Movie:
         else:
             self.__movie_title: str = movie_title.strip()
 
+        self.__rank: int = None
         self.__release_date: int = release_date
         self.__description: str = None
         self.__director: Director = Director("")
@@ -98,6 +100,9 @@ class Movie:
         self.__genres: list = []
         self.__runtime_minutes: int = None
 
+    @property
+    def rank(self) -> int:
+        return self.__rank
 
     @property
     def title(self) -> str:
