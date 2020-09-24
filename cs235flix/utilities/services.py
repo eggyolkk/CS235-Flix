@@ -25,6 +25,7 @@ def get_random_movies(quantity, repo: AbstractRepository):
 
 def movie_to_dict(movie: Movie):
     movie_dict = {
+        'rank': movie.rank,
         'title': movie.title,
         'year': movie.release_date
     }

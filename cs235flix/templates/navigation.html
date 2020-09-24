@@ -1,5 +1,4 @@
 <nav id="nav">
-  <img id="logo" src="{{ url_for('static', filename='covid-19.png') }}" />
 
   <h2 id="nav-header">
     {% if 'username' in session %} Hello, {{ session['username'] }} {%
@@ -8,11 +7,11 @@
   <a class="btn-nav" href="{{ url_for('home_bp.home') }}">Home</a>
 
   <div>
-    <h3>
-      <a class="btn-nav" href="{{ url_for('movies_bp.show_movies') }}">
+    <h4>
+      <a class="btn-nav" href="{{ url_for('movies_bp.movies_by_date') }}">
         Browse movies
       </a>
-    </h3>
+    </h4>
   </div>
 
   <div id="nav-footer">

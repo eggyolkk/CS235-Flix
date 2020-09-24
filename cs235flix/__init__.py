@@ -16,7 +16,7 @@ def create_app(test_config=None):
 
     # Configure the app from configuration-file settings.
     app.config.from_object('config.Config')
-    data_path = os.path.join('cs235flix', 'adapters', 'data')
+    data_path = os.path.abspath("cs235flix/adapters/data/Data1000Movies.csv")
 
     if test_config is not None:
         # Load test configuration, and override any configuration settings.

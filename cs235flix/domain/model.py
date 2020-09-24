@@ -86,13 +86,13 @@ class Director:
         return hash(self._director_full_name)
 
 class Movie:
-    def __init__(self, movie_title: str, release_date: int):
+    def __init__(self, movie_title: str, release_date: int, rank: int):
         if movie_title == "" or type(movie_title) is not str:
             self.__movie_title = None
         else:
             self.__movie_title: str = movie_title.strip()
 
-        self.__rank: int = None
+        self.__rank: int = rank
         self.__release_date: int = release_date
         self.__description: str = None
         self.__director: Director = Director("")
@@ -102,7 +102,7 @@ class Movie:
 
     @property
     def rank(self) -> int:
-        return self.__rank
+        return int(self.__rank)
 
     @property
     def title(self) -> str:
@@ -169,7 +169,7 @@ class Movie:
     def __lt__(self, other) -> bool:
         if self.title < other.title:
             return True
-        elif self.title == other.title and self.__release_date < other.release_date:
+        elif self.title == other.title and self.__release_date < int(other.release_date):
             return True
         else:
             return False
