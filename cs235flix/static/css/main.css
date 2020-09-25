@@ -39,12 +39,12 @@ img {
 }
 
 .btn-nav {
-  padding: 10px;
-  border-bottom: 1px solid #bdb8d7;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  color: #bdb8d7;
-  display: block;
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
 }
 
 .btn-nav:hover {
@@ -53,7 +53,7 @@ img {
 }
 
 .btn-general {
-    background-color: #7532cd;
+    background-color: ##4287f5;
     color: white;
     border: none;
     border-radius: 8px;
@@ -92,12 +92,14 @@ img {
 }
 
 #header {
-  padding: 20px;
+  padding-top: 100px;
+  padding-right:100px;
   background: #fff;
   border-bottom: 1px solid #e0e4e8;
   font-size: 64px;
   font-weight: bold;
   text-align: center;
+  color: #e62525;
 }
 
 #content-2 {
@@ -113,9 +115,10 @@ img {
 }
 
 #nav {
-  width: 200px;
-  height: 100%;
-  background: #7532cd;
+  overflow: hidden;
+  width: 100%;
+  height: 30px;
+  background: #e62525;
   padding: 30px 0px;
   position: fixed;
 }
@@ -123,8 +126,8 @@ img {
 #nav-header {
   color: #fff;
   text-align: center;
-  margin-bottom: 30px;
-  margin-top: 12px;
+  margin-bottom: 10px;
+  margin-top: -30px;
 }
 
 #sub-nav-header {
@@ -137,7 +140,8 @@ img {
 
 #nav-footer {
   color: #fff;
-  margin-top: 25px;
+  margin-left:85%;
+  margin-top: 0px;
   margin-bottom: 20px;
   position: absolute;
   bottom: 0;
@@ -159,8 +163,8 @@ img {
 }
 
 #sidebar {
-    background-color: #8acd32;
-    color: #717171;
+    background-color: #fff;
+    color: #fff;
     width: 33.333333%;
     min-height: 100vh;
     height: 100%;
