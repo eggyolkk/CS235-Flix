@@ -115,6 +115,7 @@ class MovieFileCSVReader:
         self._dataset_of_actors = []
         self._dataset_of_directors = []
         self._dataset_of_genres = []
+        self._dataset_of_descriptions = []
 
     def read_csv_file(self):
         with open(self.__file_name, mode='r', encoding='utf-8-sig') as csvfile:
@@ -125,7 +126,8 @@ class MovieFileCSVReader:
                 add_rank = row['Rank']
                 add_title = row['Title']
                 add_year = int(row['Year'])
-                add_movie = Movie(add_title, add_year, add_rank)
+                add_description = row['Description']
+                add_movie = Movie(add_title, add_year, add_rank, add_description)
                 self._dataset_of_movies.append(add_movie)
 
                 actors_list = row['Actors'].split(",")
@@ -185,4 +187,4 @@ guardians = Movie("Guardians of the Galaxy", 2014, 1)
 
 populate(c_path, new_repo)
 print("First movie", new_repo.get_first_movie())
-print(new_repo.get_movies_by_date(2013))"""
+print(new_repo.get_movies_by_date(2009))"""

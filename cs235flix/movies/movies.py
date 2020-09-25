@@ -5,12 +5,23 @@ from flask import request, render_template, redirect, url_for, session
 
 import cs235flix.adapters.repository as repo
 import cs235flix.utilities.utilities as utilities
+import cs235flix.utilities.services as util_services
 import cs235flix.movies.services as services
 
 
 # Configure Blueprint.
 movies_blueprint = Blueprint(
     'movies_bp', __name__)
+
+
+@movies_blueprint.route('/browse', methods=['GET'])
+def browse_movies():
+    random_movie = util_services.get_random_movies(4, repo.repo_instance)
+    return render_template(
+        'movies/movies.html',
+        random=random_movie,
+        title='Testing browse'
+    )
 
 
 @movies_blueprint.route('/movies_by_date', methods=['GET'])
@@ -38,12 +49,14 @@ def movies_by_date():
     next_movie_url = None
     prev_movie_url = None
 
+    movie_type=type(first_movie)
+
     if len(movies) > 0:
         # There's at least one movie for the target date.
         if previous_date is not None:
             # There are movies on a previous date, so generate URLs for the 'previous' and 'first' navigation buttons.
-            prev_movie_url = url_for('movies_bp.movies_by_date', date=previous_date.isoformat())
-            first_movie_url = url_for('movies_bp.movies_by_date', date=first_movie['date'].isoformat())
+            prev_movie_url = url_for('movies_bp.movies_by_date', date=previous_date)
+            first_movie_url = url_for('movies_bp.movies_by_date', date=first_movie['date'])
 
         # There are movies on a subsequent date, so generate URLs for the 'next' and 'last' navigation buttons.
         if next_date is not None:
@@ -65,5 +78,6 @@ def movies_by_date():
         return render_template(
             'movies/movies.html',
             title='No movies',
-            next=next_date
+            first_movie=last_movie,
+            type=movie_type
         )

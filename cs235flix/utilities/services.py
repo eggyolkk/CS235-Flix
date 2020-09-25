@@ -27,7 +27,8 @@ def movie_to_dict(movie: Movie):
     movie_dict = {
         'rank': movie.rank,
         'title': movie.title,
-        'year': movie.release_date
+        'year': movie.release_date,
+        'description': movie.description
     }
     return movie_dict
 
