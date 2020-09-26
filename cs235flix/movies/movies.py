@@ -14,7 +14,7 @@ movies_blueprint = Blueprint(
     'movies_bp', __name__)
 
 
-@movies_blueprint.route('/browse', methods=['GET'])
+@movies_blueprint.route('/browse_movies', methods=['GET'])
 def browse_movies():
     random_movie = util_services.get_random_movies(4, repo.repo_instance)
     return render_template(

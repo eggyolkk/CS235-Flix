@@ -196,9 +196,9 @@ def populate(data_path: str, repo: MemoryRepository):
     load_movies(data_path, repo)
 
 
-new_repo = MemoryRepository()
+"""new_repo = MemoryRepository()
 c_path = os.path.abspath("data/Data1000Movies.csv")
 
-"""populate(c_path, new_repo)
+populate(c_path, new_repo)
 print("First movie", new_repo.get_first_movie())
 movie = new_repo.get_movie(10)"""

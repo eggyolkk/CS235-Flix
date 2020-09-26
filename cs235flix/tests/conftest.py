@@ -5,8 +5,9 @@ from cs235flix import create_app
 from cs235flix.adapters import memory_repository
 from cs235flix.adapters.memory_repository import MemoryRepository
 
-TEST_DATA_PATH = os.path.join('C:', os.sep, 'Users', 'Ella', 'Documents', 'Uni', 'COMPSCI_235', 'CS235-Flix',
-                              'cs235flix', 'tests', 'data', 'Data1000Movies.csv')
+TEST_DATA_PATH = os.path.abspath("cs235flix/tests/data/Data1000Movies.csv")
+"""TEST_DATA_PATH = os.path.join('C:', os.sep, 'Users', 'Ella', 'Documents', 'Uni', 'COMPSCI_235', 'CS235-Flix',
+                              'cs235flix', 'tests', 'data', 'Data1000Movies.csv')"""
 
 
 @pytest.fixture

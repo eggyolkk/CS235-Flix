@@ -10,7 +10,7 @@ class NonExistentMovieException(Exception):
 
 
 def get_movie(movie_rank: int, repo: AbstractRepository):
-    movie = repo.get_movies(movie_rank)
+    movie = repo.get_movie(movie_rank)
 
     if movie is None:
         raise NonExistentMovieException
@@ -59,6 +59,10 @@ def movie_to_dict(movie: Movie):
         'rank': movie.rank,
         'date': movie.release_date,
         'title': movie.title,
+        'description': movie.description,
+        'director': movie.director,
+        'actors': movie.actors,
+        'genres': movie.genres
     }
     return movie_dict
 
