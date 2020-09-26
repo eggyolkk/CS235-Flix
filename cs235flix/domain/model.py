@@ -87,7 +87,8 @@ class Director:
 
 
 class Movie:
-    def __init__(self, movie_title: str, release_date: int, rank: int, description: str):
+    def __init__(self, movie_title: str, release_date: int, rank: int, description: str, director: Director, actors: [],
+                 genres: []):
         if movie_title == "" or type(movie_title) is not str:
             self.__movie_title = None
         else:
@@ -96,9 +97,9 @@ class Movie:
         self.__rank: int = rank
         self.__release_date: int = release_date
         self.__description: str = description
-        self.__director: Director = Director("")
-        self.__actors: list = []
-        self.__genres: list = []
+        self.__director: Director = Director(director)
+        self.__actors: list = actors
+        self.__genres: list = genres
         self.__runtime_minutes: int = None
 
     @property
