@@ -72,32 +72,40 @@ class MemoryRepository(AbstractRepository):
 
     def get_date_of_previous_movie(self, movie: Movie):
         previous_date = None
+        current_date = 0
 
         try:
             index = self.movie_index(movie)
-            for stored_movie in reversed(self._movies[0:index]):
-                if stored_movie.release_date < movie.release_date:
+            for stored_movie in reversed(self._movies):
+                if int(movie.release_date) > int(stored_movie.release_date) > int(current_date):
                     previous_date = stored_movie.release_date
-                    break
+                    current_date = stored_movie.release_date
         except ValueError:
             # No earlier movies, so return None
             pass
 
+        if previous_date is not None:
+            return int(previous_date)
         return previous_date
 
     def get_date_of_next_movie(self, movie: Movie):
         next_date = None
+        current_date = 2020
 
         try:
             index = self.movie_index(movie)
-            for stored_movie in self._movies[index + 1:len(self._movies)]:
-                if stored_movie.release_date > movie.release_date:
+            for stored_movie in self._movies:
+                if int(current_date) > int(stored_movie.release_date) > int(movie.release_date):
+                    current_date = stored_movie.release_date
+
+                if int(movie.release_date) < int(stored_movie.release_date) <= int(current_date):
                     next_date = stored_movie.release_date
-                    break
         except ValueError:
             # No subsequent movies, so return None.
             pass
 
+        if next_date is not None:
+            return int(next_date)
         return next_date
 
     # Helper method to return movie index.
@@ -127,8 +135,9 @@ class MovieFileCSVReader:
                 add_title = row['Title']
                 add_year = int(row['Year'])
                 add_description = row['Description']
-                add_movie = Movie(add_title, add_year, add_rank, add_description)
-                self._dataset_of_movies.append(add_movie)
+                add_actors = []
+                add_genres = []
+                add_director = ""
 
                 actors_list = row['Actors'].split(",")
                 for a in actors_list:
@@ -136,18 +145,24 @@ class MovieFileCSVReader:
                     add_actor = Actor(actor)
                     if add_actor not in self._dataset_of_actors:
                         self._dataset_of_actors.append(add_actor)
+                    add_actors.append(add_actor)
 
                 directors_list = row['Director'].split(",")
                 for d in directors_list:
                     add_director = Director(d)
                     if add_director not in self._dataset_of_directors:
                         self._dataset_of_directors.append(add_director)
+                    add_director = d
 
                 genre_list = row['Genre'].split(",")
                 for g in genre_list:
                     add_genre = Genre(g)
                     if add_genre not in self._dataset_of_genres:
                         self._dataset_of_genres.append(add_genre)
+                    add_genres.append(add_genre)
+
+                add_movie = Movie(add_title, add_year, add_rank, add_description, add_director, add_actors, add_genres)
+                self._dataset_of_movies.append(add_movie)
 
                 index += 1
 
@@ -181,10 +196,9 @@ def populate(data_path: str, repo: MemoryRepository):
     load_movies(data_path, repo)
 
 
-"""new_repo = MemoryRepository()
+new_repo = MemoryRepository()
 c_path = os.path.abspath("data/Data1000Movies.csv")
-guardians = Movie("Guardians of the Galaxy", 2014, 1)
 
-populate(c_path, new_repo)
+"""populate(c_path, new_repo)
 print("First movie", new_repo.get_first_movie())
-print(new_repo.get_movies_by_date(2009))"""
+movie = new_repo.get_movie(10)"""
