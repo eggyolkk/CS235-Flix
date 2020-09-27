@@ -14,6 +14,7 @@ class MemoryRepository(AbstractRepository):
     def __init__(self):
         self._movies = list()
         self._movies_index = dict()
+        self._search = ""
 
     @property
     def get_index(self):
@@ -63,7 +64,7 @@ class MemoryRepository(AbstractRepository):
         return len(self._movies)
 
     def get_movies_by_rank(self, rank_list):
-        # Strip out any ids in id_list that don't represent Movie ids in the repository.
+        # Strip out any ranks in rank_list that don't represent Movie ranks in the repository.
         existing_ranks = [rank for rank in rank_list if rank in self._movies_index]
 
         # Fetch the movies.
@@ -114,6 +115,32 @@ class MemoryRepository(AbstractRepository):
         if index != len(self._movies) and self._movies[index].release_date == movie.release_date:
             return index
         raise ValueError
+
+    def get_movie_ranks_for_actor(self, movies: list):
+        rank_list = []
+
+        for movie in movies:
+            rank_list.append(int(movie.rank))
+
+        return rank_list
+
+    def get_movie_by_actor(self, search: str):
+        movies_with_actor = []
+        search = search.lower()
+
+        for movie in self._movies:
+            for actor in movie.actors:
+                if search in str(actor).lower():
+                    movies_with_actor.append(movie)
+
+        return movies_with_actor
+
+    def set_search(self, search: str):
+        self._search = search
+
+
+    def get_search(self):
+        return self._search
 
 
 class MovieFileCSVReader:
@@ -200,5 +227,5 @@ def populate(data_path: str, repo: MemoryRepository):
 c_path = os.path.abspath("data/Data1000Movies.csv")
 
 populate(c_path, new_repo)
-print("First movie", new_repo.get_first_movie())
-movie = new_repo.get_movie(10)"""
+movies = new_repo.get_movie_by_actor("z")
+print(new_repo.get_movie_ranks_for_actor(movies))"""

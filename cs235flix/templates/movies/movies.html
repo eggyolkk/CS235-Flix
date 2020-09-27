@@ -34,14 +34,16 @@
             </div>
         </nav>
 
-    <h1>Looking for something to watch? Here are some flicks to try out:</h1>
-    <br>
-    <div>
-        {% for i in random %}
-            <h4>{{ i['title'] }} {{ i['year'] }}</h4>
-            <p>{{ i['description'] }}</p>
-            <br>
-        {% endfor %}
+    <div class="movie-content">
+        <h1>Looking for something to watch? Here are some flicks to try out:</h1><br>
+        {{ title }}
+        <div class="content">
+            {% for i in random %}
+                <h3>{{ i['title'] }} {{ i['year'] }}</h3>
+                <h5>{{ i['description'] }}</h5>
+                <br>
+            {% endfor %}
+        </div>
     </div>
 
     {% for movie in movies %}

@@ -24,7 +24,62 @@ def browse_movies():
     )
 
 
-@movies_blueprint.route('/movies_by_date', methods=['GET'])
+@movies_blueprint.route('/browse_by_actor', methods=['GET'])
+def browse_by_actor_index():
+    # Generate the webpage to display the articles.
+    return render_template(
+        'movies/browse_by_actor_index.html',
+        title='Testing browse by actor'
+    )
+
+
+@movies_blueprint.route('/browse_by_actor', methods=['GET'])
+def browse_by_actor():
+    movies_per_page = 4
+
+    # Read query parameters.
+    # initials = request.args.get('initials')
+    initials = "a"
+    cursor = request.args.get('cursor')
+
+    if cursor is None:
+        # No cursor query parameter, so initialise cursor to start at the beginning
+        cursor = 0
+    else:
+        # Convert cursor from string to int.
+        cursor = int(cursor)
+
+    # Fetch movies with starring actors.
+    movies_with_actor = services.get_movies_by_actor(initials, repo.repo_instance)
+
+    # Retrieve movie ranks for movies with starring actors.
+    movie_ranks = services.get_movie_ranks_for_actor(movies_with_actor, repo.repo_instance)
+
+    first_movie_url = None
+    last_movie_url = None
+    next_movie_url = None
+    prev_movie_url = None
+
+    if cursor > 0:
+        # There are preceding movies, so generate URLs for the 'previous' and 'first' navigation buttons.
+        prev_movie_url = url_for('movies_bp.browse_by_actor', initials=initials, cursor=cursor - movies_per_page)
+        first_movie_url = url_for('movies_bp.browse_by_actor', initials=initials)
+
+    if cursor + movies_per_page < len(movie_ranks):
+        # There are further movies, so generate URLs for the 'next' and 'last' navigation buttons.
+        next_movie_url = url_for('movies_bp.browse_by_actor', initials=initials, cursor=cursor + movies_per_page)
+
+        last_cursor = movies_per_page * int(len(movie_ranks) / movies_per_page)
+        if len(movie_ranks) % movies_per_page == 0:
+            last_cursor -= movies_per_page
+        last_movie_url = url_for('movies_bp.browse_by_actor', initials=initials, cursor=last_cursor)
+
+    # Generate the webpage to display the articles.
+    return render_template(
+    )
+
+
+"""@movies_blueprint.route('/movies_by_date', methods=['GET'])
 def movies_by_date():
     # Read query parameters.
     target_date = request.args.get('date')
@@ -80,4 +135,4 @@ def movies_by_date():
             title='No movies',
             first_movie=last_movie,
             type=movie_type
-        )
+        )"""

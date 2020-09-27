@@ -1,0 +1,15 @@
+<nav class="navbar">
+
+  <a class="btn-nav" href="{{ url_for('movies_bp.browse_movies') }}">Browse</a>
+
+  <div class="dropdown">
+    <button class="dropbtn">Browse by
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="{{ url_for('search_actor_bp.actor') }}">Actors</a>
+      <a href="#">Director</a>
+      <a href="#">Genres</a>
+    </div>
+  </div>
+</nav>

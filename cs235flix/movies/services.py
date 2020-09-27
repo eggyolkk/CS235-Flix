@@ -49,6 +49,22 @@ def get_movies_by_date(date, repo: AbstractRepository):
 
     return movies_dto, prev_date, next_date
 
+
+def get_movies_by_actor(initials, repo: AbstractRepository):
+    # Returns movies which include actors with their first letter specified by variable initials.
+
+    movies = repo.get_movie_by_actor(initials)
+
+    return movies
+
+
+def get_movie_ranks_for_actor(movies: list, repo: AbstractRepository):
+    # Returns a list of ranks for the movies with starring actors.
+
+    rank_list = repo.get_movie_ranks_for_actor(movies)
+
+    return rank_list
+
 # ============================================
 # Functions to convert model entities to dicts
 # ============================================

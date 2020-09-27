@@ -42,4 +42,7 @@ def create_app(test_config=None):
         from .utilities import utilities
         app.register_blueprint(utilities.utilities_blueprint)
 
+        from .search.actors import search_actor
+        app.register_blueprint(search_actor.search_actor_blueprint)
+
     return app

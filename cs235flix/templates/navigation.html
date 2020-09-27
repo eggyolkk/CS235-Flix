@@ -7,11 +7,20 @@
   <a class="btn-nav" href="{{ url_for('home_bp.home') }}">Home</a>
 
   <div>
-    <h4>
       <a class="btn-nav" href="{{ url_for('movies_bp.browse_movies') }}">
         Browse movies
       </a>
-    </h4>
+  </div>
+
+  <div id="dropdown">
+    <button class="btn-drop">Browse by
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      <a class="btn-drop-content" href="#">Actors</a>
+      <a class="btn-drop-content" href="#">Director</a>
+      <a class="btn-drop-content" href="#">Genres</a>
+    </div>
   </div>
 
   <div id="nav-footer">
