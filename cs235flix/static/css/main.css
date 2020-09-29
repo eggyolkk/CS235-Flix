@@ -65,7 +65,7 @@ img {
 }
 
 .btn-general-disabled {
-    background-color: #4b4276;
+    background-color: #969696;
     border: none;
     border-radius: 8px;
     display: inline-block;
@@ -76,7 +76,7 @@ img {
 }
 
 .btn-general:hover {
-    background-color: #4a1010;
+    background-color: #fff;
     color: black;
 }
 
@@ -249,15 +249,19 @@ img {
     margin-top: 30px;
 }
 
-.movie-content h1{
+.movie-content h1, h2{
     color: #fff;
 }
 
-.content h3, h5{
+.content h3, h4{
     color: #fff;
 }
 
-.actor-index h1{
+.search-page h1{
+    color: #fff;
+}
+
+.search h3{
     color: #fff;
 }
 

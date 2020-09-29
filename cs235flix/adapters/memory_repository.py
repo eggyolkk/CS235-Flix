@@ -116,7 +116,7 @@ class MemoryRepository(AbstractRepository):
             return index
         raise ValueError
 
-    def get_movie_ranks_for_actor(self, movies: list):
+    def get_movie_ranks_for_type(self, movies: list):
         rank_list = []
 
         for movie in movies:
@@ -124,20 +124,46 @@ class MemoryRepository(AbstractRepository):
 
         return rank_list
 
-    def get_movie_by_actor(self, search: str):
-        movies_with_actor = []
+    def get_movie_by_type(self, search: str, type_var: str):
+        movies = []
         search = search.lower()
 
-        for movie in self._movies:
-            for actor in movie.actors:
-                if search in str(actor).lower():
-                    movies_with_actor.append(movie)
+        if type_var == "actor":
+            for movie in self._movies:
+                for actor in movie.actors:
+                    if search in str(actor).lower():
+                        movies.append(movie)
 
-        return movies_with_actor
+        elif type_var == "director":
+            for movie in self._movies:
+                if search in str(movie.director).lower():
+                    movies.append(movie)
+
+        elif type_var == "genres":
+            genres_list = []
+            stripped = []
+
+            if "," in search:
+                genres_list = search.split(",")
+            else:
+                genres_list.append(search.strip())
+
+            for item in genres_list:
+                stripped.append(item.strip().lower())
+
+            for movie in self._movies:
+                add = True
+                for genre in stripped:
+                    if genre not in str(movie.genres).lower():
+                        add = False
+
+                if add:
+                    movies.append(movie)
+
+        return movies
 
     def set_search(self, search: str):
         self._search = search
-
 
     def get_search(self):
         return self._search
@@ -227,5 +253,5 @@ def populate(data_path: str, repo: MemoryRepository):
 c_path = os.path.abspath("data/Data1000Movies.csv")
 
 populate(c_path, new_repo)
-movies = new_repo.get_movie_by_actor("z")
-print(new_repo.get_movie_ranks_for_actor(movies))"""
+movies = new_repo.get_movie_by_type("animation, fantasy, drama", "genres")
+print(movies)"""

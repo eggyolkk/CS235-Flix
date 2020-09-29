@@ -4,41 +4,38 @@ from flask_wtf import FlaskForm
 from wtforms import Form, StringField, SubmitField
 from wtforms.validators import DataRequired, Length, ValidationError
 
-from functools import wraps
-
-import cs235flix.utilities.utilities as utilities
-import cs235flix.search.actors.services as services
+import cs235flix.search.director.services as services
 import cs235flix.adapters.repository as repo
 
 # Configure Blueprint.
-search_actor_blueprint = Blueprint(
-    'search_actor_bp', __name__
+search_director_blueprint = Blueprint(
+    'search_director_bp', __name__
 )
 
 
-@search_actor_blueprint.route('/actor', methods=['GET', 'POST'])
-def actor():
+@search_director_blueprint.route('/director', methods=['GET', 'POST'])
+def director():
     form = SearchForm()
 
     if form.validate_on_submit():
-        # Successful POST, i.e. the input for actor has passed the validation check.
+        # Successful POST, i.e. the input for director has passed the validation check.
         # Set the search to a variable.
-        services.set_search(form.actor.data, repo.repo_instance)
+        services.set_search(form.director.data, repo.repo_instance)
 
         # All is well, redirect user to results page.
-        return redirect(url_for('search_actor_bp.results'))
+        return redirect(url_for('search_director_bp.results'))
 
     # Request the display page
     return render_template(
         'search/search_page.html',
         title='Search results',
-        search_variable="actor",
-        handler_url=url_for('search_actor_bp.actor'),
+        search_variable="director",
+        handler_url=url_for('search_director_bp.director'),
         form=form
     )
 
 
-@search_actor_blueprint.route('/actor/results', methods=['GET'])
+@search_director_blueprint.route('/director/results', methods=['GET'])
 def results():
     movies_per_page = 5
 
@@ -46,7 +43,7 @@ def results():
     cursor = request.args.get('cursor')
 
     search = services.get_search(repo.repo_instance)
-    movies_list = services.search_actor(search, repo.repo_instance)
+    movies_list = services.search_director(search, repo.repo_instance)
     count = len(movies_list)
     plural = "movies"
 
@@ -60,7 +57,7 @@ def results():
         # Convert cursor from string to int
         cursor = int(cursor)
 
-    # Retrieve movie ranks for movies that have starring actor.
+    # Retrieve movie ranks for movies by director.
     movie_ranks = services.get_movie_ranks(movies_list, repo.repo_instance)
 
     # Retrieve the batch of movies to display on web page.
@@ -73,12 +70,12 @@ def results():
 
     if cursor > 0:
         # There are preceding movies, so generate URLs for the 'previous' and 'first' navigation buttons.
-        prev_movie_url = url_for('search_actor_bp.results', search=search, cursor=cursor - movies_per_page)
-        first_movie_url = url_for('search_actor_bp.results', search=search)
+        prev_movie_url = url_for('search_director_bp.results', search=search, cursor=cursor - movies_per_page)
+        first_movie_url = url_for('search_director_bp.results', search=search)
 
     if cursor + movies_per_page< len(movie_ranks):
         # There are further movies, so generate URLs for the 'next' and 'last' navigation buttons.
-        next_movie_url = url_for('search_actor_bp.results', search=search, cursor=cursor + movies_per_page)
+        next_movie_url = url_for('search_director_bp.results', search=search, cursor=cursor + movies_per_page)
 
         last_cursor = movies_per_page * int(len(movie_ranks) / movies_per_page)
         if len(movie_ranks) % movies_per_page == 0:
@@ -88,7 +85,8 @@ def results():
     return render_template(
         'movies/movies_by_search.html',
         movies=movies,
-        name="with actor '" + str(search).capitalize() + "'",
+        name="by Director '" + str(search).capitalize() + "'",
+        actor=str(search).capitalize(),
         count=count,
         movie_plural=plural,
         first_movie_url=first_movie_url,
@@ -99,7 +97,7 @@ def results():
 
 
 class SearchForm(FlaskForm):
-    actor = StringField('Search for Movies by Actor', [
+    director = StringField('Search for Movies by Director', [
         DataRequired(message='Input required'),
         Length(min=3, message='Input too short')
     ])

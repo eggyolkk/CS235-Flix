@@ -45,4 +45,10 @@ def create_app(test_config=None):
         from .search.actors import search_actor
         app.register_blueprint(search_actor.search_actor_blueprint)
 
+        from .search.director import search_director
+        app.register_blueprint(search_director.search_director_blueprint)
+
+        from .search.genres import search_genre
+        app.register_blueprint(search_genre.search_genre_blueprint)
+
     return app

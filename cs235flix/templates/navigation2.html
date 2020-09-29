@@ -8,8 +8,8 @@
     </button>
     <div class="dropdown-content">
       <a href="{{ url_for('search_actor_bp.actor') }}">Actors</a>
-      <a href="#">Director</a>
-      <a href="#">Genres</a>
+      <a href="{{ url_for('search_director_bp.director') }}">Director</a>
+      <a href="{{ url_for('search_genre_bp.genre') }}">Genres</a>
     </div>
   </div>
 </nav>

@@ -84,15 +84,15 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_movie_by_actor(self, search: str):
-        """ Returns movies with starring actors specified in search.
+    def get_movie_by_type(self, search: str, type_var: str):
+        """ Returns movies with starring actors / by director specified in search.
 
-        If no matches found, this method returns None.
+        If no matches found, this method returns an empty list.
         """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_movie_ranks_for_actor(self, movies: list):
+    def get_movie_ranks_for_type(self, movies: list):
         """ Returns a list of ranks for the movies with starring actors.
 
         If the movie list is empty, this method returns an empty list.

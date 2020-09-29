@@ -15,9 +15,9 @@ def get_search(repo: AbstractRepository):
     return search
 
 
-def search_actor(search: str, repo: AbstractRepository):
-    # Get list of movies with starring actor, if match found.
-    movies = repo.get_movie_by_type(search, "actor")
+def search_genre(search: str, repo: AbstractRepository):
+    # Get list of movies with genre(s), if match found.
+    movies = repo.get_movie_by_type(search, "genres")
 
     return movies
 
