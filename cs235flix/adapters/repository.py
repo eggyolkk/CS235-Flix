@@ -2,7 +2,7 @@ import abc
 from typing import List
 from datetime import date
 
-from cs235flix.domain.model import Actor, Genre, Director, Movie
+from cs235flix.domain.model import Actor, Genre, Director, Movie, User
 
 
 repo_instance = None
@@ -15,6 +15,20 @@ class RepositoryException(Exception):
 
 
 class AbstractRepository(abc.ABC):
+    @abc.abstractmethod
+    def add_user(self, user: User):
+        """ Adds a User to the repository. """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_user(self, username) -> User:
+        """ Returns the User named username from the repository.
+
+        If there is no User with the given username, this method returns None.
+        """
+        raise NotImplementedError
+
+
     @abc.abstractmethod
     def add_movie(self, movie: Movie):
         """ Adds a Movie to the repository. """

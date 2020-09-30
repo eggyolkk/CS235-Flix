@@ -1,3 +1,6 @@
+from datetime import date, datetime
+from typing import List, Iterable
+
 class Actor:
 
     def __init__(self, actor_full_name: str):
@@ -195,3 +198,66 @@ class Movie:
     def remove_genre(self, genre):
         if genre in self.__genres:
             self.__genres.remove(genre)
+
+
+class User:
+    def __init__(
+            self, username: str, password: str
+    ):
+        self._username: str = username
+        self._password: str = password
+        self._comments: List[Comment] = list()
+
+    @property
+    def username(self) -> str:
+        return self._username
+
+    @property
+    def password(self) -> str:
+        return self._password
+
+    @property
+    def comments(self) -> Iterable['Comment']:
+        return iter(self._comments)
+
+    def add_comment(self, comment: 'Comment'):
+        self._comments.append(comment)
+
+    def __repr__(self) -> str:
+        return f'<User {self._username} {self._password}>'
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, User):
+            return False
+        return other._username == self._username
+
+
+class Comment:
+    def __init__(
+            self, user: User, movie: 'Movie', comment: str, timestamp: datetime
+    ):
+        self._user: User = user
+        self._movie: Movie = movie
+        self._comment: Comment = comment
+        self._timestamp: datetime = timestamp
+
+    @property
+    def user(self) -> User:
+        return self._user
+
+    @property
+    def movie(self) -> 'Movie':
+        return self._movie
+
+    @property
+    def comment(self) -> str:
+        return self._comment
+
+    @property
+    def timestamp(self) -> datetime:
+        return self._timestamp
+
+    def __eq__(self, other):
+        if not isinstance(other, Comment):
+            return False
+        return other._user == self._user and other._movie == self._movie and other._comment == self._comment and other._timestamp == self._timestamp

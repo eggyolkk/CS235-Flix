@@ -5,7 +5,7 @@ from typing import List
 from bisect import bisect_left, insort_left
 
 from cs235flix.adapters.repository import AbstractRepository, RepositoryException
-from cs235flix.domain.model import Actor, Genre, Director, Movie
+from cs235flix.domain.model import Actor, Genre, Director, Movie, User
 
 
 class MemoryRepository(AbstractRepository):
@@ -15,6 +15,13 @@ class MemoryRepository(AbstractRepository):
         self._movies = list()
         self._movies_index = dict()
         self._search = ""
+        self._users = list()
+
+    def add_user(self, user: User):
+        self._users.append(user)
+
+    def get_user(self, username) -> User:
+        return next((user for user in self._users if user.username == username), None)
 
     @property
     def get_index(self):
