@@ -5,7 +5,7 @@ from typing import List
 from bisect import bisect_left, insort_left
 
 from cs235flix.adapters.repository import AbstractRepository, RepositoryException
-from cs235flix.domain.model import Actor, Genre, Director, Movie, User
+from cs235flix.domain.model import Actor, Genre, Director, Movie, User, Review
 
 
 class MemoryRepository(AbstractRepository):
@@ -16,6 +16,7 @@ class MemoryRepository(AbstractRepository):
         self._movies_index = dict()
         self._search = ""
         self._users = list()
+        self._reviews = list()
 
     def add_user(self, user: User):
         self._users.append(user)
@@ -45,13 +46,11 @@ class MemoryRepository(AbstractRepository):
     def get_movies_by_date(self, target_date: int) -> List[Movie]:
         matching_movies = list()
 
-        for movie in self._movies:
-            if int(movie.release_date) == target_date:
-                matching_movies.append(movie)
-        if len(matching_movies) == 0:
-            return []
-        else:
-            return matching_movies
+        for m in self._movies:
+            if int(m.release_date) == target_date:
+                matching_movies.append(m)
+
+        return matching_movies
 
     def get_first_movie(self):
         movie = None
@@ -66,6 +65,28 @@ class MemoryRepository(AbstractRepository):
         if len(self._movies) > 0:
             movie = self._movies[-1]
         return movie
+
+    def get_first_movie_by_date(self):
+        first_movie = None
+        current_year = 3000
+
+        for m in self._movies:
+            if int(m.release_date) < current_year:
+                current_year = int(m.release_date)
+                first_movie = m
+
+        return first_movie
+
+    def get_last_movie_by_date(self):
+        last_movie = None
+        current_year = 0
+
+        for m in self._movies:
+            if int(m.release_date) > current_year:
+                current_year = int(m.release_date)
+                last_movie = m
+
+        return last_movie
 
     def get_number_of_movies(self):
         return len(self._movies)
@@ -175,6 +196,13 @@ class MemoryRepository(AbstractRepository):
     def get_search(self):
         return self._search
 
+    def add_review(self, review: Review):
+        super().add_review(review)
+        self._reviews.append(review)
+
+    def get_reviews(self):
+        return self._reviews
+
 
 class MovieFileCSVReader:
     def __init__(self, file_name: str):
@@ -260,5 +288,5 @@ def populate(data_path: str, repo: MemoryRepository):
 c_path = os.path.abspath("data/Data1000Movies.csv")
 
 populate(c_path, new_repo)
-movies = new_repo.get_movie_by_type("animation, fantasy, drama", "genres")
-print(movies)"""
+movie = new_repo.get_movies_by_date(2006)
+print(movie)"""

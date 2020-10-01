@@ -1,8 +1,7 @@
 import abc
 from typing import List
-from datetime import date
 
-from cs235flix.domain.model import Actor, Genre, Director, Movie, User
+from cs235flix.domain.model import Movie, User, Review
 
 
 repo_instance = None
@@ -57,7 +56,7 @@ class AbstractRepository(abc.ABC):
 
     @abc.abstractmethod
     def get_first_movie(self) -> Movie:
-        """ Returns the first Movie, ordered by date, from the repository.
+        """ Returns the first Movie, ordered by rank, from the repository.
 
         Returns None if the repository is empty.
         """
@@ -65,11 +64,25 @@ class AbstractRepository(abc.ABC):
 
     @abc.abstractmethod
     def get_last_movie(self) -> Movie:
-        """ Returns the last Movie, ordered by date, from the repository.
+        """ Returns the last Movie, ordered by rank, from the repository.
 
         Returns None if the repository is empty.
         """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_first_movie_by_date(self) -> Movie:
+        """ Returns the first Movie, ordered by date, from the repository.
+
+        Returns None if the repository is empty.
+        """
+
+    @abc.abstractmethod
+    def get_last_movie_by_date(self) -> Movie:
+        """ Returns the last Movie, ordered by date, from the repository.
+
+        Returns None if the repository is empty.
+        """
 
     @abc.abstractmethod
     def get_movies_by_rank(self, rank_list):
@@ -107,7 +120,7 @@ class AbstractRepository(abc.ABC):
 
     @abc.abstractmethod
     def get_movie_ranks_for_type(self, movies: list):
-        """ Returns a list of ranks for the movies with starring actors.
+        """ Returns a list of ranks for the movie list provided.
 
         If the movie list is empty, this method returns an empty list.
         """
@@ -124,3 +137,20 @@ class AbstractRepository(abc.ABC):
 
         If no searches found, return None.
         """
+
+    @abc.abstractmethod
+    def add_review(self, review: Review):
+        """ Adds a Review to the repository.
+
+        If the Review doesn't have bidirectional links with a Movie and a User, this method raises a
+        Repository Exception and doesn't update the repository.
+        """
+        if review.user is None or review not in review.user:
+            raise RepositoryException('Review not correctly attached to a User')
+        if review.movie is None or review not in review.movie.reviews:
+            raise RepositoryException('Review not correctly attached to a Movie')
+
+    @abc.abstractmethod
+    def get_reviews(self):
+        """ Returns the Reviews stored in the repository. """
+        raise NotImplementedError

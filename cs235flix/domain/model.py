@@ -89,6 +89,82 @@ class Director:
         return hash(self._director_full_name)
 
 
+class User:
+    def __init__(
+            self, username: str, password: str
+    ):
+        self._username: str = username
+        self._password: str = password
+        self._reviews: List[Review] = list()
+
+    @property
+    def username(self) -> str:
+        return self._username
+
+    @property
+    def password(self) -> str:
+        return self._password
+
+    @property
+    def reviews(self) -> Iterable['Review']:
+        return iter(self._reviews)
+
+    def add_review(self, review: 'Review'):
+        self._reviews.append(review)
+
+    def __repr__(self) -> str:
+        return f'<User {self._username} {self._password}>'
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, User):
+            return False
+        return other._username == self._username
+
+
+class Review:
+    def __init__(self, user: User, movie: 'Movie', review_text: str, rating: int):
+        self.__movie: Movie = movie
+
+        if 1 <= rating <= 10:
+            self.__rating: int = rating
+        else:
+            self.__rating = None
+
+        self.__user: User = user
+        self.__review_text: str = review_text
+        self.__timestamp: datetime = datetime.today()
+
+    @property
+    def user(self) -> User:
+        return self._user
+
+    @property
+    def movie(self) -> 'Movie':
+        return self.__movie
+
+    @property
+    def review_text(self) -> str:
+        return self.__review_text
+
+    @property
+    def rating(self) -> int:
+        return self.__rating
+
+    @property
+    def timestamp(self) -> datetime:
+        return self.__timestamp
+
+    def __repr__(self) -> str:
+        reprstring = str(self.__movie) + ", " + str(self.__timestamp)
+        return reprstring
+
+    def __eq__(self, other) -> bool:
+        if self.__review_text == other.review_text and self.__movie == other.movie and self.__rating == other.rating and self.__timestamp == other.timestamp:
+            return True
+        else:
+            return False
+
+
 class Movie:
     def __init__(self, movie_title: str, release_date: int, rank: int, description: str, director: Director, actors: [],
                  genres: []):
@@ -104,6 +180,7 @@ class Movie:
         self.__actors: list = actors
         self.__genres: list = genres
         self.__runtime_minutes: int = None
+        self.__reviews: List[Review] = list()
 
     @property
     def rank(self) -> int:
@@ -136,6 +213,14 @@ class Movie:
     @property
     def runtime_minutes(self) -> int:
         return self.__runtime_minutes
+
+    @property
+    def reviews(self) -> Iterable[Review]:
+        return iter(self.__reviews)
+
+    @property
+    def number_of_reviews(self) -> int:
+        return len(self.__reviews)
 
     @title.setter
     def title(self, title):
@@ -172,7 +257,9 @@ class Movie:
             return False
 
     def __lt__(self, other) -> bool:
-        if self.title < other.title:
+        if other.title is None:
+            return False
+        elif self.title < other.title:
             return True
         elif self.title == other.title and self.__release_date < int(other.release_date):
             return True
@@ -199,65 +286,13 @@ class Movie:
         if genre in self.__genres:
             self.__genres.remove(genre)
 
-
-class User:
-    def __init__(
-            self, username: str, password: str
-    ):
-        self._username: str = username
-        self._password: str = password
-        self._comments: List[Comment] = list()
-
-    @property
-    def username(self) -> str:
-        return self._username
-
-    @property
-    def password(self) -> str:
-        return self._password
-
-    @property
-    def comments(self) -> Iterable['Comment']:
-        return iter(self._comments)
-
-    def add_comment(self, comment: 'Comment'):
-        self._comments.append(comment)
-
-    def __repr__(self) -> str:
-        return f'<User {self._username} {self._password}>'
-
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, User):
-            return False
-        return other._username == self._username
+    def add_review(self, review: Review):
+        self.__reviews.append(review)
 
 
-class Comment:
-    def __init__(
-            self, user: User, movie: 'Movie', comment: str, timestamp: datetime
-    ):
-        self._user: User = user
-        self._movie: Movie = movie
-        self._comment: Comment = comment
-        self._timestamp: datetime = timestamp
+def make_review(review_text: str, user: User, movie: Movie, timestamp: datetime = datetime.today()):
+    review = Review(user, movie, review_text, timestamp)
+    user.add_review(review)
+    movie.add_review(review)
 
-    @property
-    def user(self) -> User:
-        return self._user
-
-    @property
-    def movie(self) -> 'Movie':
-        return self._movie
-
-    @property
-    def comment(self) -> str:
-        return self._comment
-
-    @property
-    def timestamp(self) -> datetime:
-        return self._timestamp
-
-    def __eq__(self, other):
-        if not isinstance(other, Comment):
-            return False
-        return other._user == self._user and other._movie == self._movie and other._comment == self._comment and other._timestamp == self._timestamp
+    return review

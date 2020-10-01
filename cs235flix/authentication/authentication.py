@@ -86,7 +86,7 @@ def login():
 @authentication_blueprint.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('home_bp.home'))
+    return redirect(url_for('movies_bp.browse_movies'))
 
 
 def login_required(view):

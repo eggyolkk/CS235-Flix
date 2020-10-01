@@ -34,24 +34,40 @@
             </div>
         </nav>
 
-    <div class="movie-content">
-        <h1>Looking for something to watch? Here are some flicks to try out:</h1><br>
-        {{ title }}
-        <div class="content">
-            {% for i in random %}
-                <h3>{{ i['title'] }} {{ i['year'] }}</h3>
-                <h5>{{ i['description'] }}</h5>
-                <br>
-            {% endfor %}
+    {% if page == "random" %}
+        <div class="movie-content">
+            <h1>Looking for something to watch? Here are some flicks to try out:</h1><br>
+            {{ title }}
+            <div class="content">
+                {% for i in random %}
+                    <h3>{{ i['title'] }} {{ i['year'] }}</h3>
+                    <h5>{{ i['description'] }}</h5>
+                    <br>
+                {% endfor %}
+            </div>
         </div>
-    </div>
 
-    {% for movie in movies %}
-    <movie id="article">
-        <h2>{{movie.title}}</h2>
-        <p>{{movie.date}}</p>
-    </movie>
-    {% endfor %}
+        {% for movie in movies %}
+        <movie id="article">
+            <h2>{{movie.title}}</h2>
+            <p>{{movie.date}}</p>
+        </movie>
+        {% endfor %}
+
+    {% elif page == "year" %}
+        <div class="movie-content">
+            <h1>Movies in {{ movie_title }}</h1><br>
+        </div>
+
+        {% for movie in movies %}
+            <h2>{{movie.title}}</h2>
+            <h4>{{movie.year}}</h4>
+            <h4>{{movie.description}}</h4>
+
+            <br>
+        {% endfor %}
+
+    {% endif %}
 
     <footer>
     </footer>
