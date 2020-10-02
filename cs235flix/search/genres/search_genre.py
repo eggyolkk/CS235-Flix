@@ -85,7 +85,7 @@ def results():
         last_movie_url = url_for('search_genre_bp.results', search=search, cursor=last_cursor)
 
     return render_template(
-        'movies/movies_by_search.html',
+        'movies/browse_movies.html',
         movies=movies,
         name="with genre(s) '" + str(search) + "'",
         count=count,
@@ -93,7 +93,8 @@ def results():
         first_movie_url=first_movie_url,
         last_movie_url=last_movie_url,
         next_movie_url=next_movie_url,
-        prev_movie_url=prev_movie_url
+        prev_movie_url=prev_movie_url,
+        page="search" 
     )
 
 

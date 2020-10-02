@@ -135,7 +135,7 @@ def review_to_dict(review: Review):
     review_dict = {
         'username': review.user.username,
         'movie_rank': review.movie.rank,
-        'review_text': review.review,
+        'review_text': review.review_text,
         'timestamp': review.timestamp
     }
     return review_dict

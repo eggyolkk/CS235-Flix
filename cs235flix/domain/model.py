@@ -122,13 +122,13 @@ class User:
 
 
 class Review:
-    def __init__(self, user: User, movie: 'Movie', review_text: str, rating: int):
+    def __init__(self, user: User, movie: 'Movie', review_text: str, timestamp: datetime):
         self.__movie: Movie = movie
 
-        if 1 <= rating <= 10:
+        """if 1 <= rating <= 10:
             self.__rating: int = rating
         else:
-            self.__rating = None
+            self.__rating = None"""
 
         self.__user: User = user
         self.__review_text: str = review_text
@@ -136,7 +136,7 @@ class Review:
 
     @property
     def user(self) -> User:
-        return self._user
+        return self.__user
 
     @property
     def movie(self) -> 'Movie':
@@ -146,9 +146,9 @@ class Review:
     def review_text(self) -> str:
         return self.__review_text
 
-    @property
+    """@property
     def rating(self) -> int:
-        return self.__rating
+        return self.__rating"""
 
     @property
     def timestamp(self) -> datetime:

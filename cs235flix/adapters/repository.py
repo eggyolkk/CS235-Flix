@@ -145,7 +145,7 @@ class AbstractRepository(abc.ABC):
         If the Review doesn't have bidirectional links with a Movie and a User, this method raises a
         Repository Exception and doesn't update the repository.
         """
-        if review.user is None or review not in review.user:
+        if review.user is None or review not in review.user.reviews:
             raise RepositoryException('Review not correctly attached to a User')
         if review.movie is None or review not in review.movie.reviews:
             raise RepositoryException('Review not correctly attached to a Movie')

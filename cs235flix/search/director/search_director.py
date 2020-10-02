@@ -83,7 +83,7 @@ def results():
         last_movie_url = url_for('search_actor_bp.results', search=search, cursor=last_cursor)
 
     return render_template(
-        'movies/movies_by_search.html',
+        'movies/browse_movies.html',
         movies=movies,
         name="by Director '" + str(search).capitalize() + "'",
         actor=str(search).capitalize(),
@@ -92,7 +92,8 @@ def results():
         first_movie_url=first_movie_url,
         last_movie_url=last_movie_url,
         next_movie_url=next_movie_url,
-        prev_movie_url=prev_movie_url
+        prev_movie_url=prev_movie_url,
+        page="search"
     )
 
 

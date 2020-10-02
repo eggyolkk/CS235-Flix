@@ -104,25 +104,27 @@ def movies_by_date():
 
     movie_ranks_len = len(movie_ranks)
 
-    # Get previous max cursor
+    # Get previous max cursor and previous cursor
     if previous_date is not None:
         prev_movies, prev_previous_date, prev_next_date = services.get_movies_by_date(int(target_date)-1, repo.repo_instance)
         prev_max_cursor = math.ceil(len(prev_movies))
+        extra = int(len(prev_movies)) % 10
+        prev_cursor = int(len(prev_movies)) - extra
+
+    # Get last max cursor and cursor
+    last_movies, last_previous_date, last_next_date = services.get_movies_by_date(int(last_movie['year']), repo.repo_instance)
+    extra = int(len(last_movies)) % 10
+    last_max_cursor = math.ceil(len(last_movies))
+    last_cursor = int(len(last_movies)) - extra
 
     if len(movies) > 0:
-        # Generate the URL for the last navigation button for all pages except the last.
-        last_cursor = movies_per_page * int(len(movie_ranks) / movies_per_page)
-        if len(movie_ranks) % movies_per_page == 0:
-            last_cursor -= movies_per_page
-        last_movie_url = url_for('movies_bp.movies_by_date', date=last_movie['year'], cursor=last_cursor)
-
         # Generate the URL for the first navigation button for all pages except the first.
         if previous_date is not None or (cursor > 0 and previous_date is None):
             first_movie_url = url_for('movies_bp.movies_by_date', date=first_movie['year'])
 
         # Generate the URL for the next navigation button for the earliest date.
         if previous_date is None:
-            next_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor + movies_per_page, starting_cursor=0, max_cursor=current_max_cursor, prev_cursor=cursor, prev_max_cursor=current_max_cursor)
+            next_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor + movies_per_page, starting_cursor=0, max_cursor=current_max_cursor)
             if cursor > 0:
                 prev_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor - movies_per_page)
         else:
@@ -132,54 +134,28 @@ def movies_by_date():
                 prev_movie_url = url_for('movies_bp.movies_by_date', date=previous_date, cursor=prev_cursor, max_cursor=prev_max_cursor)
             elif cursor > 0:
                 # Navigate previous movies within the SAME year.
-                prev_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor - movies_per_page, max_cursor=current_max_cursor, prev_cursor=prev_cursor)
+                prev_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor - movies_per_page, max_cursor=current_max_cursor)
 
         # There are movies on subsequent dates.
         if next_date is not None:
             # Navigate next movies for the NEXT year.
             if cursor + movies_per_page > current_max_cursor:
-                next_movie_url = url_for('movies_bp.movies_by_date', date=next_date, cursor=0, starting_cursor=starting_cursor, max_cursor=math.ceil(movie_ranks_len), prev_cursor=cursor)
+                next_movie_url = url_for('movies_bp.movies_by_date', date=next_date, cursor=0, starting_cursor=starting_cursor, max_cursor=math.ceil(movie_ranks_len))
             else:
                 # Navigate next movies within the SAME year.
-                next_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor + movies_per_page, max_cursor=current_max_cursor, prev_cursor=prev_cursor)
+                next_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor + movies_per_page, max_cursor=current_max_cursor)
         else:
             if cursor + movies_per_page < current_max_cursor:
                 # Navigate next movies within the SAME year.
-                next_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor + movies_per_page, max_cursor=current_max_cursor, prev_cursor=prev_cursor)
+                next_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor + movies_per_page, max_cursor=current_max_cursor)
 
-        """# There's at least one movie for the target date.
-        if cursor > 0:
-            first_movie_url = url_for('movies_bp.movies_by_date', date=first_movie['year'])
-
-        if previous_date is not None:
-            if cursor > 0:
-                # Navigate previous movies from PREVIOUS year.
-                if cursor <= starting_cursor + (5 * math.ceil(movie_ranks_len)):
-                    prev_movie_url = url_for('movies_bp.movies_by_date', date=previous_date, cursor=cursor - movies_per_page)
-                # Navigate previous movies within SAME year.
-                elif starting_cursor + (5 * math.ceil(movie_ranks_len)) > cursor > 0:
-                    prev_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor - movies_per_page)
-
-        # There are movies on a subsequent date, so generate URLs for the 'next' navigation button.
-        if next_date is not None:
-            # Navigate next movies within SAME year.
-            if cursor + movies_per_page <= max_cursor and cursor >= starting_cursor:
-                next_movie_url = url_for('movies_bp.movies_by_date', date=target_date, cursor=cursor + movies_per_page, max_cursor=max_cursor)
-
-            else:
-                # Navigate next movies for NEXT year.
-                starting_cursor = cursor + movies_per_page
-                next_movie_url = url_for('movies_bp.movies_by_date', date=next_date, cursor=cursor + movies_per_page, starting_cursor=starting_cursor, max_cursor=(starting_cursor + (5 * (math.ceil(movie_ranks_len)))))
-
-            # Generate URL for the 'last' navigation button.
-            last_cursor = movies_per_page * int(len(movie_ranks) / movies_per_page)
-            if len(movie_ranks) % movies_per_page == 0:
-                last_cursor -= movies_per_page
-            last_movie_url = url_for('movies_bp.movies_by_date', date=last_movie['year'], cursor=last_cursor)"""
+        # Generate the URL for the last navigation button for all pages except the last.
+        if next_date is None and (cursor + movies_per_page <= math.ceil(movie_ranks_len)) or next_date is not None:
+            last_movie_url = url_for('movies_bp.movies_by_date', date=last_movie['year'], cursor=last_cursor, starting_cursor=0, max_cursor=last_max_cursor)
 
         # Construct urls for viewing movie reviews and adding reviews.
         for movie in movie_batch:
-            movie['view_review_url'] = url_for('movies_bp.movies_by_date', date=target_date, view_review_for=movie['rank'])
+            movie['view_review_url'] = url_for('movies_bp.movies_by_date', date=target_date, view_reviews_for=movie['rank'])
             movie['add_review_url'] = url_for('movies_bp.review_on_movie', movie=movie['rank'])
 
     # Generate the webpage to display the movies.
@@ -243,7 +219,28 @@ def review_on_movie():
         'movies/review_on_movie.html',
         title='Edit movie',
         movie=movie,
+        rank=movie_rank,
         form=form,
         handler_url=url_for('movies_bp.review_on_movie'),
         selected_movies=utilities.get_selected_movies()
     )
+
+
+class ProfanityFree:
+    def __init__(self, message=None):
+        if not message:
+            message = 'Field must not contain profanity'
+        self.message = message
+
+    def __call__(self, form, field):
+        if profanity.contains_profanity(field.data):
+            raise ValidationError(self.message)
+
+
+class ReviewForm(FlaskForm):
+    review = TextAreaField('Review', [
+        DataRequired(),
+        Length(min=4, message='Your review is too short.'),
+        ProfanityFree(message='Your review must not contain profanity')])
+    movie_rank = HiddenField("Movie rank")
+    submit = SubmitField('Submit')
