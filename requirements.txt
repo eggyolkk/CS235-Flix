@@ -26,3 +26,4 @@ Jinja2~=2.11.2
 PyMySQL~=0.9.3
 coverage~=5.2.1
 more-itertools~=8.3.0
+password-validator~=1.0
