@@ -42,13 +42,10 @@ def create_app(test_config=None):
         from .utilities import utilities
         app.register_blueprint(utilities.utilities_blueprint)
 
-        from .search.actors import search_actor
-        app.register_blueprint(search_actor.search_actor_blueprint)
+        from .search import search
+        app.register_blueprint(search.search_blueprint)
 
-        from .search.director import search_director
-        app.register_blueprint(search_director.search_director_blueprint)
-
-        from .search.genres import search_genre
-        app.register_blueprint(search_genre.search_genre_blueprint)
+        from .watchlist import watchlist
+        app.register_blueprint(watchlist.watchlist_blueprint)
 
     return app

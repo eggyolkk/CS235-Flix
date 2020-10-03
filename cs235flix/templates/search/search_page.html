@@ -20,7 +20,9 @@
                 {% elif search_variable == "director" %}
                     <h3>Search for movies by director</h3>{{ form.director }}
                 {% elif search_variable == "genre" %}
-                <h3>Search for movies by genre(s) - separate multiple genres by a comma (",")</h3>{{ form.genre }}
+                    <h3>Search for movies by genre(s) - separate multiple genres by a comma (",")</h3>{{ form.genre }}
+                {% elif search_variable == "movie" %}
+                    <h3>Search for movies by name</h3>{{ form.movie }}
                 {% endif %}
             </div>
             {{ form.submit }}

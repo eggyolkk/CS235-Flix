@@ -17,6 +17,7 @@ class MemoryRepository(AbstractRepository):
         self._search = ""
         self._users = list()
         self._reviews = list()
+        self._watchlist = list()
 
     def add_user(self, user: User):
         self._users.append(user)
@@ -188,6 +189,11 @@ class MemoryRepository(AbstractRepository):
                 if add:
                     movies.append(movie)
 
+        elif type_var == "movie":
+            for movie in self._movies:
+                if search.strip() == str(movie.title).lower():
+                    movies.append(movie)
+
         return movies
 
     def set_search(self, search: str):
@@ -202,6 +208,12 @@ class MemoryRepository(AbstractRepository):
 
     def get_reviews(self):
         return self._reviews
+
+    def add_to_watchlist(self, movie: Movie):
+        self._watchlist.append(movie)
+
+    def get_movie_watchlist(self):
+        return self._watchlist
 
 
 class MovieFileCSVReader:

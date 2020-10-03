@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<main id="main">
+    <header id="article-header">
+        <h1>{{ movies_title }}</h1>
+    </header>
+
+    <nav style="clear:both">
+            <div style="float:left">
+                {% if first_movie_url is not none %}
+                    <button class="btn-general" onclick="location.href='{{first_movie_url}}'">First</button>
+                {% else %}
+                    <button class="btn-general-disabled" disabled>First</button>
+                {% endif %}
+                {% if prev_movie_url is not none %}
+                    <button class="btn-general" onclick="location.href='{{prev_movie_url}}'">Previous</button>
+                {% else %}
+                    <button class="btn-general-disabled" disabled>Previous</button>
+                {% endif %}
+            </div>
+            <div style="float:right">
+                {% if next_movie_url is not none %}
+                    <button class="btn-general" onclick="location.href='{{next_movie_url}}'">Next</button>
+                {% else %}
+                    <button class="btn-general-disabled" disabled>Next</button>
+                {% endif %}
+                {% if last_movie_url is not none %}
+                    <button class="btn-general" onclick="location.href='{{last_movie_url}}'">Last</button>
+                {% else %}
+                    <button class="btn-general-disabled" disabled>Last</button>
+                {% endif %}
+            </div>
+        </nav>
+
+    <div class="watchlist">
+        <h1>{{ title }}</h1>
+        {{ movie_rank }}
+    </div>
+
+    <div id="demo">
+        <p>Testing:</p>
+    </div>
+
+<script>
+    var data;
+
+    function load_image(){
+        var search = "{{test_script}}";
+        $.get("https://www.omdbapi.com/?s="+search+"&apikey=ba1f4581", function(rawdata){
+            var rawstring =JSON.stringify(rawdata);
+            data =JSON.parse(rawstring);
+
+            var title = data.Search[0].Title;
+            var year = data.Search[0].Year;
+            var imdburl="https://www.imdb.com/title/"+data.Search[0].imdbID+"/";
+
+            var posterurl =data.Search[0].Poster;
+            document.getElementById('demo').innerHTML="<h1>"+title+"</h1><br> <img src= '"+posterurl+"'><br>";
+        });
+    }
+    load_image();
+</script>
+
+</main>
+
+{% endblock %}

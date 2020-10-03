@@ -312,3 +312,17 @@ input[type='submit']:hover {
     overflow: hidden;
 }
 
+#movie-poster {
+    position: absolute;
+    left: 210px;
+}
+
+#search-movie{
+    position: absolute;
+    top: 600px;
+    left: 800px;
+}
+
+#title{
+    font-size: 100px;
+}

@@ -27,7 +27,6 @@ class AbstractRepository(abc.ABC):
         """
         raise NotImplementedError
 
-
     @abc.abstractmethod
     def add_movie(self, movie: Movie):
         """ Adds a Movie to the repository. """
@@ -130,6 +129,7 @@ class AbstractRepository(abc.ABC):
     def set_search(self, search: str):
         """ Set the current search to user input.
         """
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_search(self):
@@ -137,6 +137,7 @@ class AbstractRepository(abc.ABC):
 
         If no searches found, return None.
         """
+        raise NotImplementedError
 
     @abc.abstractmethod
     def add_review(self, review: Review):
@@ -153,4 +154,14 @@ class AbstractRepository(abc.ABC):
     @abc.abstractmethod
     def get_reviews(self):
         """ Returns the Reviews stored in the repository. """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_to_watchlist(self, movie: Movie):
+        """ Adds a Movie to repository watchlist."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_movie_watchlist(self):
+        """ Returns the Movies stored in the repository. """
         raise NotImplementedError

@@ -27,7 +27,6 @@ def browse_movies():
     return render_template(
         'movies/browse_movies.html',
         random=random_movie,
-        title='Testing browse',
         page='random'
     )
 
@@ -157,6 +156,7 @@ def movies_by_date():
         for movie in movie_batch:
             movie['view_review_url'] = url_for('movies_bp.movies_by_date', date=target_date, view_reviews_for=movie['rank'])
             movie['add_review_url'] = url_for('movies_bp.review_on_movie', movie=movie['rank'])
+            movie['add_to_watchlist_url'] = url_for('watchlist_bp.add_to_watchlist', movie=movie['rank'])
 
     # Generate the webpage to display the movies.
     return render_template(
@@ -189,6 +189,10 @@ def review_on_movie():
         # Successful POST, i.e. the review text has passed data validation.
         # Extract the movie rank, representing the reviewed movie, from the form.
         movie_rank = int(form.movie_rank.data)
+        get_search = form.search_data.data
+        get_search_cursor = int(form.search_cursor_data.data)
+        get_search_page = form.search_page_data.data
+        get_search_type = form.search_type.data
 
         # Use the service layer to store the new review.
         services.add_review(movie_rank, form.review.data, username, repo.repo_instance)
@@ -198,19 +202,37 @@ def review_on_movie():
 
         # Cause the web browser to display the page of all movies that have the same date as the reviewed movie,
         # and display all reviews, including the new review.
-        return redirect(url_for('movies_bp.movies_by_date', date=movie['year'], view_reviews_for=movie_rank))
+        if get_search_type == "actor" or get_search_type == "director" or get_search_type == "genres" or get_search_type == "movie":
+            return redirect(
+                url_for('search_bp.results', search=get_search, cursor=get_search_cursor, view_reviews_for=movie_rank,
+                        search_type=get_search_type))
+        else:
+            return redirect(url_for('movies_bp.movies_by_date', date=movie['year'], view_reviews_for=movie_rank))
 
     if request.method == 'GET':
         # Request is a HTTP GET to display the form.
         # Extract the movie rank, representing the movie to review, from a query parameter of the GET request.
         movie_rank = int(request.args.get('movie'))
+        search_page = request.args.get('search_page')
+        search = request.args.get('search')
+        search_cursor = int(request.args.get('search_cursor'))
+        search_type = request.args.get('search_type')
 
         # Store the movie rank in the form.
         form.movie_rank.data = movie_rank
+        form.search_data.data = search
+        form.search_page_data.data = search_page
+        form.search_cursor_data.data = search_cursor
+        form.search_type.data = search_type
+
+
     else:
         # Request is a HTTP POST where form validation has failed.
         # Extract the movie rank of the movie being reviewed from the form.
         movie_rank = int(form.movie_rank.data)
+        search_page = str(form.search_page_data.data)
+        search = str(form.search_data.data)
+        search_cursor = form.search_cursor_data.data
 
     # For a GET or an unsuccessful POST, retrieve the movie to review in dict form, and return a Web page that allows
     # the user to enter a review. The generated Web page includes a form object.
@@ -222,7 +244,8 @@ def review_on_movie():
         rank=movie_rank,
         form=form,
         handler_url=url_for('movies_bp.review_on_movie'),
-        selected_movies=utilities.get_selected_movies()
+        selected_movies=utilities.get_selected_movies(),
+        page="search"
     )
 
 
@@ -242,5 +265,10 @@ class ReviewForm(FlaskForm):
         DataRequired(),
         Length(min=4, message='Your review is too short.'),
         ProfanityFree(message='Your review must not contain profanity')])
+
     movie_rank = HiddenField("Movie rank")
-    submit = SubmitField('Submit')
+    search_data = HiddenField("Search")
+    search_page_data = HiddenField("Search page")
+    search_cursor_data = HiddenField("Search cursor")
+    search_type = HiddenField("Search type")
+    submit = SubmitField("Submit")
