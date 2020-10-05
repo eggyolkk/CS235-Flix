@@ -165,3 +165,11 @@ class AbstractRepository(abc.ABC):
     def get_movie_watchlist(self):
         """ Returns the Movies stored in the repository. """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def check_if_added(self, movie_rank: int):
+        """ Returns True if movie has been added to watchlist.
+
+        If the movie hasn't been added, this method returns False.
+        """
+        raise NotImplementedError

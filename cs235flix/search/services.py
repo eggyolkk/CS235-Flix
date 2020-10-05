@@ -41,7 +41,7 @@ def get_search(repo: AbstractRepository):
 
 
 def search_for_type(search: str, search_type: str, repo: AbstractRepository):
-    # Get list of movies with starring actor, if match found.
+    # Get list of movies with actor,director, genre(s).
     movies = repo.get_movie_by_type(search, search_type)
 
     return movies
@@ -80,6 +80,18 @@ def get_reviews_for_movie(movie_rank, repo: AbstractRepository):
     return reviews_to_dict(movie.reviews)
 
 
+def check_if_added(movie_rank: int, repo: AbstractRepository):
+    add = repo.check_if_added(movie_rank)
+
+    return add
+
+
+def get_watchlist(repo: AbstractRepository):
+    watchlist = repo.get_movie_watchlist()
+
+    return watchlist
+
+
 # Functions to convert model entities to dicts
 # ============================================
 
@@ -87,13 +99,14 @@ def get_reviews_for_movie(movie_rank, repo: AbstractRepository):
 def movie_to_dict(movie: Movie):
     movie_dict = {
         'rank': movie.rank,
-        'date': movie.release_date,
+        'year': movie.release_date,
         'title': movie.title,
         'description': movie.description,
         'director': movie.director,
         'actors': movie.actors,
         'genres': movie.genres,
-        'reviews': reviews_to_dict(movie.reviews)
+        'reviews': reviews_to_dict(movie.reviews),
+        'watchlist': False
     }
     return movie_dict
 

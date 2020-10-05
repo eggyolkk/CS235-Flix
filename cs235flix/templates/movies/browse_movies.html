@@ -4,7 +4,6 @@
 
 <main id="main">
     <header id="article-header">
-        <h1>{{ movies_title }}</h1>
     </header>
 
     <nav style="clear:both">
@@ -55,18 +54,24 @@
         {% endfor %}
 
     {% elif page == "year" %}
+
         <div class="movie-content">
-            <h1>Movies in {{ movie_title }}</h1><br>
+            <h1>Movies in {{ movies_title }}</h1><br>
         </div>
 
-        {% for movie in movies %}
+        {% for movie in movie_batch %}
             <h2>{{movie.title}}</h2>
             <h4>{{movie.year}}</h4>
             <h4>{{movie.description}}</h4>
 
             <div style="float:left">
-                <button class="btn-general" onclick="location.href='{{ movie.add_to_watchlist_url }}'">Add to Watchlist</button>
-                {% if movie.reviews|length > 0 and movie.rank != show_reviews_for_movie %}
+                {% if movie['watchlist'] == False %}
+                    <button class="btn-general" onclick="location.href='{{ movie.add_to_watchlist_url }}'">Add to Watchlist</button>
+                {% elif movie['watchlist'] == True %}
+                    <button class="btn-general-disabled">Added to Watchlist</button>
+                {% endif %}
+
+                {% if movie.reviews|length > 0 and movie.rank != show_reviews_for_movies %}
                     <button class="btn-general" onclick="location.href='{{ movie.view_review_url }}'">View Reviews</button>
                 {% endif %}
                 <button class="btn-general" onclick="location.href='{{ movie.add_review_url }}'">Post Review</button>
@@ -103,15 +108,19 @@
                             <h4>Starring: {{ movie['actors'] | replace("[","") | replace("<","") | replace(">","") | replace("]","") | replace("Actor","") }}</h4>
 
                             <div style="float:left">
-                                <button class="btn-general" onclick="location.href='{{ movie.add_to_watchlist_url }}'">Add to Watchlist</button>
+                                {% if movie['watchlist'] == False %}
+                                    <button class="btn-general" onclick="location.href='{{ movie.add_to_watchlist_url }}'">Add to Watchlist</button>
+                                {% elif movie['watchlist'] == True %}
+                                    <button class="btn-general-disabled">Added to Watchlist</button>
+                                {% endif %}
+
                                 {% if movie.reviews|length > 0 and movie.rank != show_reviews_for_movie %}
                                     <button class="btn-general" onclick="location.href='{{ movie.view_review_url }}'">View Reviews</button>
                                 {% endif %}
                                 <button class="btn-general" onclick="location.href='{{ movie.add_review_url }}'">Post Review</button>
                             </div>
 
-
-                            {% if movie.rank == show_reviews_for_movies %}
+                            {% if movie['rank'] == show_reviews_for_movies %}
                                 <div style="clear:both">
                                     {% for review in movie.reviews %}
                                         <h4>{{ review.review_text }}, by {{ review.username }}, {{ review.timestamp }}</h4>
@@ -124,35 +133,68 @@
                     </div>
 
                 {% else %}
-
                     {% for movie in movies %}
-                        <h3>{{ movie['title'] }} {{ movie['year'] }}</h3>
+
+                        <h3>{{ movie['title'] }}<br>{{ movie['year'] }}</h3>
                         <h4>{{ movie['description'] }}</h4>
                         <h4>Starring: {{ movie['actors'] | replace("[","") | replace("<","") | replace(">","") | replace("]","") | replace("Actor","") }}</h4>
 
                         <div style="float:left">
-                            <button class="btn-general" onclick="location.href='{{ movie.add_to_watchlist_url }}'">Add to Watchlist</button>
-                            {% if movie.reviews|length > 0 and movie.rank != show_reviews_for_movie %}
+                            {% if movie['watchlist'] == False %}
+                                <button class="btn-general" onclick="location.href='{{ movie.add_to_watchlist_url }}'">Add to Watchlist</button>
+                            {% elif movie['watchlist'] == True %}
+                                <button class="btn-general-disabled">Added to Watchlist</button>
+                            {% endif %}
+
+                            {% if movie.reviews|length > 0 and movie['rank'] != show_reviews_for_movies %}
                                 <button class="btn-general" onclick="location.href='{{ movie.view_review_url }}'">View Reviews</button>
                             {% endif %}
                             <button class="btn-general" onclick="location.href='{{ movie.add_review_url }}'">Post Review</button>
                         </div>
 
 
-                        {% if movie.rank == show_reviews_for_movies %}
+                        {% if movie['rank'] == show_reviews_for_movies %}
                             <div style="clear:both">
                                 {% for review in movie.reviews %}
                                     <h4>{{ review.review_text }}, by {{ review.username }}, {{ review.timestamp }}</h4>
                                 {% endfor %}
                             </div>
                         {% endif %}
+
                         <br><br><br>
 
                     {% endfor %}
 
-
                 {% endif %}
             </div>
+        </div>
+
+    {% elif page == "watchlist" %}
+        <br>
+        <div class="movie-content">
+            <h1>{{ title }}</h1>
+            {% for movie in watchlist %}
+                <h2>{{ movie['title'] }}<br>{{ movie['year'] }}</h2>
+                <h4>{{ movie['description'] }}</h4>
+                <h4>Starring: {{ movie['actors'] | replace("[","") | replace("<","") | replace(">","") | replace("]","") | replace("Actor","") }}</h4>
+
+                <div style="float:left">
+                    {% if movie.reviews|length > 0 and movie['rank'] != movie_to_show_reviews %}
+                        <button class="btn-general" onclick="location.href='{{ movie.view_review_url }}'">View Reviews</button>
+                    {% endif %}
+                    <button class="btn-general" onclick="location.href='{{ movie.add_review_url }}'">Post Review</button>
+                </div>
+
+                {% if movie['rank'] == movie_to_show_reviews %}
+                    <div style="clear:both">
+                        {% for review in movie.reviews %}
+                            <h4>{{ review.review_text }}, by {{ review.username }}, {{ review.timestamp }}</h4>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+            <br><br><br>
+            {% endfor %}
         </div>
 
     {% endif %}

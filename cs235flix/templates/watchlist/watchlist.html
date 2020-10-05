@@ -34,34 +34,14 @@
             </div>
         </nav>
 
-    <div class="watchlist">
+    <div class="movie-content">
         <h1>{{ title }}</h1>
-        {{ movie_rank }}
+        {% for movie in watchlist %}
+            {{ movie.title }}
+            <br>
+        {% endfor %}
     </div>
-
-    <div id="demo">
-        <p>Testing:</p>
-    </div>
-
-<script>
-    var data;
-
-    function load_image(){
-        var search = "{{test_script}}";
-        $.get("https://www.omdbapi.com/?s="+search+"&apikey=ba1f4581", function(rawdata){
-            var rawstring =JSON.stringify(rawdata);
-            data =JSON.parse(rawstring);
-
-            var title = data.Search[0].Title;
-            var year = data.Search[0].Year;
-            var imdburl="https://www.imdb.com/title/"+data.Search[0].imdbID+"/";
-
-            var posterurl =data.Search[0].Poster;
-            document.getElementById('demo').innerHTML="<h1>"+title+"</h1><br> <img src= '"+posterurl+"'><br>";
-        });
-    }
-    load_image();
-</script>
+    {% endif %}
 
 </main>
 

@@ -210,10 +210,18 @@ class MemoryRepository(AbstractRepository):
         return self._reviews
 
     def add_to_watchlist(self, movie: Movie):
-        self._watchlist.append(movie)
+        if movie not in self._watchlist:
+            self._watchlist.append(movie)
 
     def get_movie_watchlist(self):
         return self._watchlist
+
+    def check_if_added(self, movie_rank: int):
+        for movie in self._watchlist:
+            if movie.rank == movie_rank:
+                return True
+
+        return False
 
 
 class MovieFileCSVReader:

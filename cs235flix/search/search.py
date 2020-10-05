@@ -112,7 +112,34 @@ def results():
     cursor = request.args.get('cursor')
     search_type = request.args.get('search_type')
     movie_to_show_reviews = request.args.get('view_reviews_for')
+    added_movie = request.args.get('added_movie')
 
+    movies, specification, search, count, plural, first_movie_url, last_movie_url, next_movie_url, prev_movie_url, movie_for_poster = results_helper(search_type, movie_to_show_reviews, cursor, movies_per_page)
+
+    if movie_to_show_reviews is not None:
+        movie_to_show_reviews = int(movie_to_show_reviews)
+
+    return render_template(
+        'movies/browse_movies.html',
+        movies=movies,
+        name=specification + str(search).capitalize() + "'",
+        count=count,
+        movie_plural=plural,
+        first_movie_url=first_movie_url,
+        last_movie_url=last_movie_url,
+        next_movie_url=next_movie_url,
+        prev_movie_url=prev_movie_url,
+        page="search",
+        search_type=search_type,
+        search_movie_poster=movie_for_poster,
+        search_text=str(search),
+        show_reviews_for_movies=movie_to_show_reviews,
+        added_movie=added_movie,
+        review_type=type(movie_to_show_reviews)
+    )
+
+
+def results_helper(search_type: str, movie_to_show_reviews: int, cursor: int, movies_per_page: int):
     search = services.get_search(repo.repo_instance)
     movies_list = services.search_for_type(search, search_type, repo.repo_instance)
     count = len(movies_list)
@@ -140,6 +167,12 @@ def results():
 
     # Retrieve the batch of movies to display on web page.
     movies = services.get_movies_by_type(movie_ranks[cursor:cursor + movies_per_page], repo.repo_instance)
+    watch_list = services.get_watchlist(repo.repo_instance)
+
+    for m in movies:
+        for added_movie in watch_list:
+            if int(m['rank']) == int(added_movie.rank):
+                m['watchlist'] = True
 
     first_movie_url = None
     last_movie_url = None
@@ -148,14 +181,30 @@ def results():
 
     current_cursor = cursor
 
+    if str(search_type) == "actor":
+        specification = "with actor '"
+    elif search_type == "director":
+        specification = "by director '"
+    elif search_type == "movie":
+        specification = "by the name '"
+    else:
+        specification = "with genre(s) '"
+
+    if len(movies) > 0:
+        movie_for_poster = str(search)
+    else:
+        movie_for_poster = "Invalidmovietitle"
+
     if cursor > 0:
         # There are preceding movies, so generate URLs for the 'previous' and 'first' navigation buttons.
-        prev_movie_url = url_for('search_bp.results', search=search, cursor=cursor - movies_per_page, search_type=search_type)
+        prev_movie_url = url_for('search_bp.results', search=search, cursor=cursor - movies_per_page,
+                                 search_type=search_type)
         first_movie_url = url_for('search_bp.results', search=search)
 
     if cursor + movies_per_page < len(movie_ranks):
         # There are further movies, so generate URLs for the 'next' and 'last' navigation buttons.
-        next_movie_url = url_for('search_bp.results', search=search, cursor=cursor + movies_per_page, search_type=search_type)
+        next_movie_url = url_for('search_bp.results', search=search, cursor=cursor + movies_per_page,
+                                 search_type=search_type)
 
         last_cursor = movies_per_page * int(len(movie_ranks) / movies_per_page)
         if len(movie_ranks) % movies_per_page == 0:
@@ -164,41 +213,19 @@ def results():
 
     # Construct urls for viewing movie reviews and adding reviews.
     for m in movies:
+
         m['view_review_url'] = url_for('search_bp.results', search_cursor=cursor, search_page="search",
-                                           view_reviews_for=m['rank'], search_type=search_type)
-        m['add_review_url'] = url_for('movies_bp.review_on_movie', movie=m['rank'], search_page="search", search=search, search_cursor=cursor, search_type=search_type)
-        m['add_to_watchlist_url'] = url_for('watchlist_bp.add_to_watchlist', movie=m['rank'], search_page="search", search_cursor=cursor)
+                                       view_reviews_for=m['rank'], search_type=search_type)
+        m['add_review_url'] = url_for('movies_bp.review_on_movie', movie=m['rank'], search_page="search", search=search,
+                                      search_cursor=cursor, search_type=search_type)
+        m['add_to_watchlist_url'] = url_for('movies_bp.add_to_watchlist', movie=m['rank'], search_page="search",
+                                            search_cursor=cursor, search_type=search_type, search_text=search,
+                                            show_reviews_for_movies=movie_to_show_reviews,
+                                            name=specification + str(search).capitalize() + "'", movie_plural=plural,
+                                            count=count, search_movie_poster=movie_for_poster, page="search",
+                                            movies_per_page=movies_per_page)
 
-    if str(search_type) == "actor":
-        specification = "with actor '"
-    elif search_type == "director":
-        specification = "by director '"
-    elif search_type == "movie":
-        specification = "by the name '"
-    else:
-        specification=""
-
-    if len(movies) > 0:
-        movie_for_poster = str(search)
-    else:
-        movie_for_poster = "Invalidmovietitle"
-
-    return render_template(
-        'movies/browse_movies.html',
-        movies=movies,
-        name=specification + str(search).capitalize() + "'",
-        count=count,
-        movie_plural=plural,
-        first_movie_url=first_movie_url,
-        last_movie_url=last_movie_url,
-        next_movie_url=next_movie_url,
-        prev_movie_url=prev_movie_url,
-        page="search",
-        search_type=search_type,
-        search_movie_poster=movie_for_poster,
-        search_text=str(search),
-        show_reviews_for_movies=movie_to_show_reviews
-    )
+    return movies, specification, search, count, plural, first_movie_url, last_movie_url, next_movie_url, prev_movie_url, movie_for_poster
 
 
 class ActorSearchForm(FlaskForm):

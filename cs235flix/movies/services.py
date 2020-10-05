@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, List
 
 import cs235flix.adapters.repository as repo
 from cs235flix.adapters.repository import AbstractRepository
@@ -77,14 +77,6 @@ def get_movies_by_rank(rank_list, repo: AbstractRepository):
     return movies_as_dict
 
 
-def get_movies_by_actor(initials, repo: AbstractRepository):
-    # Returns movies which include actors with their first letter specified by variable initials.
-
-    movies = repo.get_movie_by_actor(initials)
-
-    return movies
-
-
 def get_reviews_for_movie(movie_rank, repo: AbstractRepository):
     movie = repo.get_movie(movie_rank)
 
@@ -108,6 +100,46 @@ def get_movies_by_type(rank_list: list, repo: AbstractRepository):
 
     return movies_as_dict
 
+
+def add_to_watchlist(movie_rank: int, repo: AbstractRepository):
+    # Check that the movie exists
+    movie = repo.get_movie(movie_rank)
+    if movie is None:
+        raise NonExistentMovieException
+
+    # Update the repository
+    repo.add_to_watchlist(movie)
+
+    add = repo.check_if_added(movie_rank)
+
+
+def get_watchlist(repo: AbstractRepository):
+    watchlist = repo.get_movie_watchlist()
+
+    return watchlist
+
+
+def search_for_type(search: str, search_type: str, repo: AbstractRepository):
+    # Get list of movies with actor,director, genre(s).
+    movies = repo.get_movie_by_type(search, search_type)
+
+    return movies
+
+
+def get_dict_watchlist(repo: AbstractRepository):
+    watchlist = repo.get_movie_watchlist()
+
+    watchlist_as_dict = movies_to_dict(watchlist)
+    return watchlist_as_dict
+
+
+def get_movies_in_watchlist(rank_list: list, repo: AbstractRepository):
+    movies = repo.get_movies_by_rank(rank_list)
+
+    # Convert Movies to dictionary form.
+    movies_as_dict = movies_to_dict(movies)
+
+    return movies_as_dict
 # ============================================
 # Functions to convert model entities to dicts
 # ============================================
@@ -122,7 +154,8 @@ def movie_to_dict(movie: Movie):
         'director': movie.director,
         'actors': movie.actors,
         'genres': movie.genres,
-        'reviews': reviews_to_dict(movie.reviews)
+        'reviews': reviews_to_dict(movie.reviews),
+        'watchlist': False
     }
     return movie_dict
 
