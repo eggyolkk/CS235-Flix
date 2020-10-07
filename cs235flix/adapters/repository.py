@@ -173,3 +173,16 @@ class AbstractRepository(abc.ABC):
         If the movie hasn't been added, this method returns False.
         """
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def years_list(self):
+        """ Returns a list of the release dates of all movies.
+
+        If movies list is empty, this method returns an empty list.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_posters_by_movies(self, movies):
+        """ Sets posters to the movies. """
+        raise NotImplementedError

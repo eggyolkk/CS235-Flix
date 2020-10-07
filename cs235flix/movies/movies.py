@@ -21,17 +21,17 @@ movies_blueprint = Blueprint(
     'movies_bp', __name__)
 
 
-@movies_blueprint.route('/browse_movies', methods=['GET'])
+@movies_blueprint.route('/', methods=['GET'])
 def browse_movies():
     random_movie = util_services.get_random_movies(4, repo.repo_instance)
     return render_template(
-        'movies/browse_movies.html',
+        'movies/home.html',
         random=random_movie,
         page='random'
     )
 
 
-@movies_blueprint.route('/movies_by_date', methods=['GET'])
+@movies_blueprint.route('/browse_by_date', methods=['GET'])
 def movies_by_date():
     movies_per_page = 10
 
@@ -43,15 +43,15 @@ def movies_by_date():
     max_cursor = request.args.get('max_cursor')
     prev_cursor = request.args.get('prev_cursor')
 
-    movie_batch, first_movie_url, last_movie_url, prev_movie_url, next_movie_url, target_date = movies_by_date_helper(
+    movie_batch, first_movie_url, last_movie_url, prev_movie_url, next_movie_url, target_date, years_dict = movies_by_date_helper(
                                                     cursor, starting_cursor, max_cursor, prev_cursor, target_date,
                                                     movie_to_show_reviews, movies_per_page)
 
     # Construct urls for viewing movie reviews and adding reviews.
     for movie in movie_batch:
         movie['view_review_url'] = url_for('movies_bp.movies_by_date', date=target_date,
-                                           view_reviews_for=movie['rank'])
-        movie['add_review_url'] = url_for('movies_bp.review_on_movie', movie=movie['rank'])
+                                           view_reviews_for=movie['rank'], cursor=cursor, max_cursor=max_cursor)
+        movie['add_review_url'] = url_for('movies_bp.review_on_movie', movie=movie['rank'], year_cursor=cursor, year_max_cursor=max_cursor)
         movie['add_to_watchlist_url'] = url_for('movies_bp.add_to_watchlist', movie=movie['rank'],
                                                 target_date=target_date,
                                                 movie_to_show_reviews=movie_to_show_reviews,
@@ -73,7 +73,8 @@ def movies_by_date():
         prev_movie_url=prev_movie_url,
         next_movie_url=next_movie_url,
         show_reviews_for_movies=movie_to_show_reviews,
-        page='year'
+        page='year',
+        years_dict=years_dict
     )
 
 
@@ -82,6 +83,12 @@ def movies_by_date():
 def review_on_movie():
     # Obtain the username of the currently logged in user.
     username = session['username']
+
+    # Read query parameters
+    cursor = request.args.get('cursor')
+    starting_cursor = request.args.get('starting_cursor')
+    max_cursor = request.args.get('max_cursor')
+    prev_cursor = request.args.get('prev_cursor')
 
     # Create form. The form maintains state, e.g. when this method is called with a HTTP GET request and populates
     # the form with a movie rank, when subsequently called with a HTTP POST request, the movie rank remains in the
@@ -96,6 +103,8 @@ def review_on_movie():
         get_search_cursor = form.search_cursor_data.data
         get_search_page = form.search_page_data.data
         get_search_type = form.search_type.data
+        get_year_cursor = form.year_cursor.data
+        get_year_max_cursor = form.year_max_cursor.data
 
         # Use the service layer to store the new review.
         services.add_review(movie_rank, form.review.data, username, repo.repo_instance)
@@ -112,7 +121,7 @@ def review_on_movie():
         elif get_search_type == "watchlist":
             return redirect(url_for('movies_bp.watchlist', cursor=int(get_search_cursor)))
         else:
-            return redirect(url_for('movies_bp.movies_by_date', date=movie['year']))
+            return redirect(url_for('movies_bp.movies_by_date', date=movie['year'], cursor=get_year_cursor, max_cursor=get_year_max_cursor))
 
     if request.method == 'GET':
         # Request is a HTTP GET to display the form.
@@ -122,6 +131,8 @@ def review_on_movie():
         search = request.args.get('search')
         search_cursor = request.args.get('search_cursor')
         search_type = request.args.get('search_type')
+        year_cursor = request.args.get('year_cursor')
+        year_max_cursor = request.args.get('year_max_cursor')
 
         # Store the movie rank in the form.
         form.movie_rank.data = movie_rank
@@ -129,7 +140,8 @@ def review_on_movie():
         form.search_page_data.data = search_page
         form.search_cursor_data.data = search_cursor
         form.search_type.data = search_type
-
+        form.year_cursor.data = year_cursor
+        form.year_max_cursor.data = year_max_cursor
     else:
         # Request is a HTTP POST where form validation has failed.
         # Extract the movie rank of the movie being reviewed from the form.
@@ -137,6 +149,8 @@ def review_on_movie():
         search_page = str(form.search_page_data.data)
         search = str(form.search_data.data)
         search_cursor = form.search_cursor_data.data
+        year_cursor = form.year_cursor.data
+        year_max_cursor = form.year_max_cursor.data
 
     # For a GET or an unsuccessful POST, retrieve the movie to review in dict form, and return a Web page that allows
     # the user to enter a review. The generated Web page includes a form object.
@@ -154,7 +168,7 @@ def review_on_movie():
 
 
 @movies_blueprint.route('/watchlist', methods=['GET'])
-# @login_required
+@login_required
 def watchlist():
     movies_per_page = 5
 
@@ -172,6 +186,7 @@ def watchlist():
 
     movie_ranks = services.get_movie_ranks(watch_list_list, repo.repo_instance)
     watch_list = services.get_movies_in_watchlist(movie_ranks[cursor:cursor + movies_per_page], repo.repo_instance)
+    services.get_posters(watch_list, repo.repo_instance)
 
     first_movie_url = None
     last_movie_url = None
@@ -213,10 +228,10 @@ def watchlist():
 
 
 @movies_blueprint.route('/add_to_watchlist', methods=['GET'])
-# @login_required
+@login_required
 def add_to_watchlist():
     # Obtain the username of the currently logged in user.
-    # username = session['username']
+    username = session['username']
 
     # Read query parameters - from movie/actor/director/genre search page
     global first_movie_url, last_movie_url, prev_movie_url, next_movie_url
@@ -258,15 +273,15 @@ def add_to_watchlist():
     elif page == "year":
         # If user added to watchlist via browse movies by date
         movies_per_page = int(movies_per_page)
-        movie_batch, first_movie_url, last_movie_url, prev_movie_url, next_movie_url, target_date = movies_by_date_helper(cursor,
+        movie_batch, first_movie_url, last_movie_url, prev_movie_url, next_movie_url, target_date, years_dict = movies_by_date_helper(cursor,
                                                          starting_cursor, max_cursor, prev_cursor, target_date,
                                                          movie_to_show_reviews, movies_per_page)
 
         # Construct urls for viewing movie reviews and adding reviews.
         for movie in movie_batch:
             movie['view_review_url'] = url_for('movies_bp.movies_by_date', date=target_date,
-                                               view_reviews_for=movie['rank'])
-            movie['add_review_url'] = url_for('movies_bp.review_on_movie', movie=movie['rank'])
+                                           view_reviews_for=movie['rank'], cursor=cursor, max_cursor=max_cursor)
+            movie['add_review_url'] = url_for('movies_bp.review_on_movie', movie=movie['rank'], year_cursor=cursor, year_max_cursor=max_cursor)
             movie['add_to_watchlist_url'] = url_for('movies_bp.add_to_watchlist', movie=movie['rank'],
                                                     target_date=target_date,
                                                     movie_to_show_reviews=movie_to_show_reviews,
@@ -296,6 +311,7 @@ def add_to_watchlist():
         last_movie_url=last_movie_url,
         prev_movie_url=prev_movie_url,
         next_movie_url=next_movie_url,
+        years_dict=years_dict
     )
 
 
@@ -308,7 +324,7 @@ def movies_by_date_helper(cursor: int, starting_cursor: int, max_cursor: int, pr
 
     current_max_cursor = starting_max_cursor
 
-    if cursor is None or cursor == "0":
+    if cursor is None or cursor == "0" or cursor == '':
         # No cursor query parameter so initialise cursor to start at the beginning.
         cursor = 0
     else:
@@ -320,7 +336,7 @@ def movies_by_date_helper(cursor: int, starting_cursor: int, max_cursor: int, pr
     else:
         current_starting_cursor = 0
 
-    if max_cursor is not None:
+    if max_cursor is not None and max_cursor != '':
         current_max_cursor = int(max_cursor)
 
     if prev_cursor is not None:
@@ -354,6 +370,8 @@ def movies_by_date_helper(cursor: int, starting_cursor: int, max_cursor: int, pr
     # Retrieve the batch of movies to display on web page
     movie_batch = services.get_movies_by_type(movie_ranks[cursor:cursor + movies_per_page], repo.repo_instance)
     watch_list = services.get_watchlist(repo.repo_instance)
+
+    services.get_posters(movie_batch, repo.repo_instance)
 
     for m in movie_batch:
         for added_movie in watch_list:
@@ -424,7 +442,15 @@ def movies_by_date_helper(cursor: int, starting_cursor: int, max_cursor: int, pr
             last_movie_url = url_for('movies_bp.movies_by_date', date=last_movie['year'], cursor=last_cursor,
                                      starting_cursor=0, max_cursor=last_max_cursor)
 
-        return movie_batch, first_movie_url, last_movie_url, prev_movie_url, next_movie_url, target_date
+        years_list = services.get_years(repo.repo_instance)
+        years_url = []
+        for year in years_list:
+            year_movies, year_previous_date, year_next_date = services.get_movies_by_date(int(year), repo.repo_instance)
+            years_url.append(
+                url_for('movies_bp.movies_by_date', date=year, cursor=0, max_cursor=math.ceil(len(year_movies))))
+        years_dict = services.get_years_dict(years_list, years_url, repo.repo_instance)
+
+        return movie_batch, first_movie_url, last_movie_url, prev_movie_url, next_movie_url, target_date, years_dict
 
 
 class ProfanityFree:
@@ -449,4 +475,6 @@ class ReviewForm(FlaskForm):
     search_page_data = HiddenField("Search page")
     search_cursor_data = HiddenField("Search cursor")
     search_type = HiddenField("Search type")
+    year_cursor = HiddenField("Year cursor")
+    year_max_cursor = HiddenField("Year max cursor")
     submit = SubmitField("Submit")

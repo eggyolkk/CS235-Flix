@@ -169,6 +169,8 @@ def results_helper(search_type: str, movie_to_show_reviews: int, cursor: int, mo
     movies = services.get_movies_by_type(movie_ranks[cursor:cursor + movies_per_page], repo.repo_instance)
     watch_list = services.get_watchlist(repo.repo_instance)
 
+    services.get_posters(movies, repo.repo_instance)
+
     for m in movies:
         for added_movie in watch_list:
             if int(m['rank']) == int(added_movie.rank):

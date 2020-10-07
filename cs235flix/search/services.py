@@ -92,6 +92,10 @@ def get_watchlist(repo: AbstractRepository):
     return watchlist
 
 
+def get_posters(movies: Iterable[Movie], repo: AbstractRepository):
+    repo.get_posters_by_movies(movies)
+
+
 # Functions to convert model entities to dicts
 # ============================================
 
@@ -106,7 +110,8 @@ def movie_to_dict(movie: Movie):
         'actors': movie.actors,
         'genres': movie.genres,
         'reviews': reviews_to_dict(movie.reviews),
-        'watchlist': False
+        'watchlist': False,
+        'poster': None
     }
     return movie_dict
 

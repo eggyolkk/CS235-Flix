@@ -19,6 +19,11 @@ html {
 h1 {
     text-align: center;
     font-weight: bold;
+    color: #fff;
+}
+
+h3 {
+    color: #fff;
 }
 
 img {
@@ -193,24 +198,13 @@ img {
   padding-left: 10px;
 }
 
-#nav-footer {
-  color: #fff;
-  margin-left:85%;
-  margin-top: 0px;
-  margin-bottom: 20px;
-  position: absolute;
-  bottom: 0;
-  font-size: small;
-  text-align: center;
-  word-wrap: break-word;
-}
-
 #main {
   margin: 20px;
   color: #717171;
   line-height: 25px;
   padding: 10px;
   width: 90%;
+  font-color: #fff;
 }
 
 #logo {
@@ -323,6 +317,11 @@ input[type='submit']:hover {
     left: 800px;
 }
 
-#title{
-    font-size: 100px;
+.title h1{
+    font-size: 300px;
+    color: #fff;
+}
+
+.form-field {
+    color: #fff;
 }

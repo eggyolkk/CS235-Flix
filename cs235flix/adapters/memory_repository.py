@@ -1,11 +1,25 @@
 import csv
 import os
 from typing import List
+import omdb
 
 from bisect import bisect_left, insort_left
 
 from cs235flix.adapters.repository import AbstractRepository, RepositoryException
 from cs235flix.domain.model import Actor, Genre, Director, Movie, User, Review
+
+
+def get_poster(movie: str):
+    # Set OMDB API key
+    omdb.set_default("apikey", "1454b6c1")
+    movies_list = omdb.search_movie(movie)
+
+    # Get poster
+    if len(movies_list) != 0:
+        poster = movies_list[0]["poster"]
+        return poster
+    else:
+        return None
 
 
 class MemoryRepository(AbstractRepository):
@@ -18,6 +32,7 @@ class MemoryRepository(AbstractRepository):
         self._users = list()
         self._reviews = list()
         self._watchlist = list()
+        self._years = list()
 
     def add_user(self, user: User):
         self._users.append(user)
@@ -222,6 +237,20 @@ class MemoryRepository(AbstractRepository):
                 return True
 
         return False
+
+    def years_list(self):
+        years_list = []
+        for movie in self._movies:
+            if int(movie.release_date) not in years_list:
+                years_list.append(int(movie.release_date))
+
+        years_list.sort()
+        return years_list
+
+    def get_posters_by_movies(self, movies):
+        for movie in movies:
+            poster = get_poster(movie['title'])
+            movie['poster'] = poster
 
 
 class MovieFileCSVReader:

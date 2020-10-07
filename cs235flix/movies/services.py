@@ -4,7 +4,6 @@ import cs235flix.adapters.repository as repo
 from cs235flix.adapters.repository import AbstractRepository
 from cs235flix.domain.model import make_review, Movie, Review
 
-
 class NonExistentMovieException(Exception):
     pass
 
@@ -101,6 +100,12 @@ def get_movies_by_type(rank_list: list, repo: AbstractRepository):
     return movies_as_dict
 
 
+"""def get_movies_list(rank_list: list, repo: AbstractRepository):
+    movies = repo.get_movies_by_rank(rank_list)
+
+    return movies"""
+
+
 def add_to_watchlist(movie_rank: int, repo: AbstractRepository):
     # Check that the movie exists
     movie = repo.get_movie(movie_rank)
@@ -140,6 +145,19 @@ def get_movies_in_watchlist(rank_list: list, repo: AbstractRepository):
     movies_as_dict = movies_to_dict(movies)
 
     return movies_as_dict
+
+
+def get_years(repo: AbstractRepository):
+    years_list = repo.years_list()
+
+    return years_list
+
+
+def get_posters(movies: List[Movie], repo: AbstractRepository):
+    repo.get_posters_by_movies(movies)
+
+
+
 # ============================================
 # Functions to convert model entities to dicts
 # ============================================
@@ -155,7 +173,8 @@ def movie_to_dict(movie: Movie):
         'actors': movie.actors,
         'genres': movie.genres,
         'reviews': reviews_to_dict(movie.reviews),
-        'watchlist': False
+        'watchlist': False,
+        'poster': None
     }
     return movie_dict
 
@@ -176,3 +195,10 @@ def review_to_dict(review: Review):
 
 def reviews_to_dict(reviews: Iterable[Review]):
     return [review_to_dict(review) for review in reviews]
+
+
+def get_years_dict(years_list, url_list, repo: AbstractRepository):
+    years_dict = {}
+    for i in range(len(years_list)):
+        years_dict[years_list[i]] = url_list[i]
+    return years_dict

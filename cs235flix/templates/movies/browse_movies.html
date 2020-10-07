@@ -33,36 +33,23 @@
             </div>
         </nav>
 
-    {% if page == "random" %}
-        <div class="movie-content">
-            <h1>Looking for something to watch? Here are some flicks to try out:</h1><br>
-            <div class="content">
-                {% for movie in random %}
-                    <h3>{{ movie['title'] }} {{ movie['year'] }}</h3>
-                    <h4>{{ movie['description'] }}</h4>
-                    <br>
-
-                {% endfor %}
-            </div>
-        </div>
-
-        {% for movie in movies %}
-        <movie id="article">
-            <h2>{{movie.title}}</h2>
-            <p>{{movie.date}}</p>
-        </movie>
-        {% endfor %}
-
-    {% elif page == "year" %}
-
+    {% if page == "year" %}
         <div class="movie-content">
             <h1>Movies in {{ movies_title }}</h1><br>
         </div>
+
+        <div style="float:center">
+            {% for k, v in years_dict | dictsort -%}
+                <button class="btn-general" onclick="location.href='{{ v }}'">{{k}}</button>
+            {% endfor %}
+        </div>
+        <br><br><br>
 
         {% for movie in movie_batch %}
             <h2>{{movie.title}}</h2>
             <h4>{{movie.year}}</h4>
             <h4>{{movie.description}}</h4>
+            <img src="{{movie.poster}}">
 
             <div style="float:left">
                 {% if movie['watchlist'] == False %}
@@ -134,10 +121,12 @@
 
                 {% else %}
                     {% for movie in movies %}
+                        <img src="{{movie.poster}}">
 
                         <h3>{{ movie['title'] }}<br>{{ movie['year'] }}</h3>
                         <h4>{{ movie['description'] }}</h4>
                         <h4>Starring: {{ movie['actors'] | replace("[","") | replace("<","") | replace(">","") | replace("]","") | replace("Actor","") }}</h4>
+
 
                         <div style="float:left">
                             {% if movie['watchlist'] == False %}
@@ -174,6 +163,8 @@
         <div class="movie-content">
             <h1>{{ title }}</h1>
             {% for movie in watchlist %}
+                <img src="{{movie.poster}}">
+
                 <h2>{{ movie['title'] }}<br>{{ movie['year'] }}</h2>
                 <h4>{{ movie['description'] }}</h4>
                 <h4>Starring: {{ movie['actors'] | replace("[","") | replace("<","") | replace(">","") | replace("]","") | replace("Actor","") }}</h4>

@@ -176,6 +176,7 @@ class Movie:
         self.__genres: list = genres
         self.__runtime_minutes: int = None
         self.__reviews: List[Review] = list()
+        self.__poster: str = None
 
     @property
     def rank(self) -> int:
@@ -216,6 +217,10 @@ class Movie:
     @property
     def number_of_reviews(self) -> int:
         return len(self.__reviews)
+
+    @property
+    def poster(self) -> str:
+        return self.__poster
 
     @title.setter
     def title(self, title):
@@ -283,6 +288,9 @@ class Movie:
 
     def add_review(self, review: Review):
         self.__reviews.append(review)
+
+    def add_poster(self, poster: str):
+        self.__poster = poster
 
 
 class WatchList:
