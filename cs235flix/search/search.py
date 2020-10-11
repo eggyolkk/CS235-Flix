@@ -1,14 +1,11 @@
-from flask import Blueprint, session, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request
 
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField, SubmitField
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length
 
-import cs235flix.utilities.utilities as utilities
 import cs235flix.search.services as services
 import cs235flix.adapters.repository as repo
-
-from cs235flix.authentication.authentication import login_required
 
 # Configure Blueprint.
 search_blueprint = Blueprint(
@@ -114,7 +111,8 @@ def results():
     movie_to_show_reviews = request.args.get('view_reviews_for')
     added_movie = request.args.get('added_movie')
 
-    movies, specification, search, count, plural, first_movie_url, last_movie_url, next_movie_url, prev_movie_url, movie_for_poster = results_helper(search_type, movie_to_show_reviews, cursor, movies_per_page)
+    movies, specification, search, count, plural, first_movie_url, last_movie_url, next_movie_url, prev_movie_url, \
+        movie_for_poster = results_helper(search_type, movie_to_show_reviews, cursor, movies_per_page)
 
     if movie_to_show_reviews is not None:
         movie_to_show_reviews = int(movie_to_show_reviews)
@@ -180,8 +178,6 @@ def results_helper(search_type: str, movie_to_show_reviews: int, cursor: int, mo
     last_movie_url = None
     next_movie_url = None
     prev_movie_url = None
-
-    current_cursor = cursor
 
     if str(search_type) == "actor":
         specification = "with actor '"

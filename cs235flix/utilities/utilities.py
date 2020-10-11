@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for, session
+from flask import Blueprint, url_for
 
 import cs235flix.adapters.repository as repo
 import cs235flix.utilities.services as services
@@ -15,4 +15,3 @@ def get_selected_movies(quantity=3):
     for movie in movies:
         movie['hyperlink'] = url_for('movies_bp.browse_movies', date=movie['year'])
     return movies
-

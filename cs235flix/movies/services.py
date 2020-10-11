@@ -1,6 +1,5 @@
 from typing import Iterable, List
 
-import cs235flix.adapters.repository as repo
 from cs235flix.adapters.repository import AbstractRepository
 from cs235flix.domain.model import make_review, Movie, Review
 
@@ -12,7 +11,7 @@ class UnknownUserException(Exception):
     pass
 
 
-def add_review(movie_rank: int, review_text: str, username: str, repo: AbstractRepository):
+def add_review(movie_rank: int, review_text: str, username: str, rating, repo: AbstractRepository):
     # Check that the movie exists.
     movie = repo.get_movie(movie_rank)
     if movie is None:
@@ -23,7 +22,7 @@ def add_review(movie_rank: int, review_text: str, username: str, repo: AbstractR
         raise UnknownUserException
 
     # Create review.
-    review = make_review(review_text, user, movie)
+    review = make_review(review_text, user, movie, rating)
 
     # Update the repository.
     repo.add_review(review)
@@ -38,14 +37,14 @@ def get_movie(movie_rank: int, repo: AbstractRepository):
     return movie_to_dict(movie)
 
 
-def get_first_movie(repo: AbstractRepository):
+def get_first_date(repo: AbstractRepository):
 
     movie = repo.get_first_movie_by_date()
 
     return movie_to_dict(movie)
 
 
-def get_last_movie(repo: AbstractRepository):
+def get_last_date(repo: AbstractRepository):
 
     movie = repo.get_last_movie_by_date()
 
@@ -100,12 +99,6 @@ def get_movies_by_type(rank_list: list, repo: AbstractRepository):
     return movies_as_dict
 
 
-"""def get_movies_list(rank_list: list, repo: AbstractRepository):
-    movies = repo.get_movies_by_rank(rank_list)
-
-    return movies"""
-
-
 def add_to_watchlist(movie_rank: int, repo: AbstractRepository):
     # Check that the movie exists
     movie = repo.get_movie(movie_rank)
@@ -157,7 +150,6 @@ def get_posters(movies: List[Movie], repo: AbstractRepository):
     repo.get_posters_by_movies(movies)
 
 
-
 # ============================================
 # Functions to convert model entities to dicts
 # ============================================
@@ -188,7 +180,8 @@ def review_to_dict(review: Review):
         'username': review.user.username,
         'movie_rank': review.movie.rank,
         'review_text': review.review_text,
-        'timestamp': review.timestamp
+        'timestamp': review.timestamp,
+        'rating': review.rating
     }
     return review_dict
 

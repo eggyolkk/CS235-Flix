@@ -3,7 +3,7 @@
 {% block content %}
 
 <main id="main">
-    <header id="article-header">
+    <header id="movie-header">
     </header>
 
     <nav style="clear:both">
@@ -67,7 +67,7 @@
             {% if movie.rank == show_reviews_for_movies %}
             <div style="clear:both">
                 {% for review in movie.reviews %}
-                    <h4>{{ review.review_text }}, by {{ review.username }}, {{ review.timestamp }}</h4>
+                    <h4>{{ review.username }} : {{ review.review_text }} <br>Rating: {{ review.rating }} <br>{{ review.timestamp }}<br><br></h4>
                 {% endfor %}
             </div>
             {% endif %}
@@ -110,7 +110,7 @@
                             {% if movie['rank'] == show_reviews_for_movies %}
                                 <div style="clear:both">
                                     {% for review in movie.reviews %}
-                                        <h4>{{ review.review_text }}, by {{ review.username }}, {{ review.timestamp }}</h4>
+                                        <h4>{{ review.username }} : {{ review.review_text }} <br>Rating: {{ review.rating }} <br>{{ review.timestamp }}<br><br></h4>
                                     {% endfor %}
                                 </div>
                             {% endif %}
@@ -145,7 +145,7 @@
                         {% if movie['rank'] == show_reviews_for_movies %}
                             <div style="clear:both">
                                 {% for review in movie.reviews %}
-                                    <h4>{{ review.review_text }}, by {{ review.username }}, {{ review.timestamp }}</h4>
+                                    <h4>{{ review.username }} : {{ review.review_text }} <br>Rating: {{ review.rating }} <br>{{ review.timestamp }}<br><br></h4>
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -179,7 +179,7 @@
                 {% if movie['rank'] == movie_to_show_reviews %}
                     <div style="clear:both">
                         {% for review in movie.reviews %}
-                            <h4>{{ review.review_text }}, by {{ review.username }}, {{ review.timestamp }}</h4>
+                            <h4>{{ review.username }} : {{ review.review_text }} <br>Rating: {{ review.rating }} <br>{{ review.timestamp }}<br><br></h4>
                         {% endfor %}
                     </div>
                 {% endif %}

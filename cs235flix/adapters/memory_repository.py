@@ -5,7 +5,9 @@ import omdb
 
 from bisect import bisect_left, insort_left
 
-from cs235flix.adapters.repository import AbstractRepository, RepositoryException
+from werkzeug.security import generate_password_hash
+
+from cs235flix.adapters.repository import AbstractRepository
 from cs235flix.domain.model import Actor, Genre, Director, Movie, User, Review
 
 
@@ -33,6 +35,10 @@ class MemoryRepository(AbstractRepository):
         self._reviews = list()
         self._watchlist = list()
         self._years = list()
+
+    @property
+    def users(self):
+        return self._users
 
     def add_user(self, user: User):
         self._users.append(user)
@@ -320,8 +326,35 @@ class MovieFileCSVReader:
         return self._dataset_of_genres
 
 
+def read_csv_file(filename: str):
+    with open(filename, encoding='utf-8-sig') as infile:
+        reader = csv.reader(infile)
+
+        # Read first line of the the CSV file.
+        headers = next(reader)
+
+        # Read remaining rows from the CSV file.
+        for row in reader:
+            # Strip any leading/trailing white space from data read.
+            row = [item.strip() for item in row]
+            yield row
+
+
+def load_users(data_path: str, repo: MemoryRepository):
+    users = dict()
+
+    for data_row in read_csv_file(os.path.join(data_path, 'users.csv')):
+        user = User(
+            username=data_row[0],
+            password=generate_password_hash(data_row[1])
+        )
+        repo.add_user(user)
+        users[data_row[0]] = user
+    return users
+
+
 def load_movies(data_path: str, repo: MemoryRepository):
-    movie_file_reader = MovieFileCSVReader(os.path.join(data_path))
+    movie_file_reader = MovieFileCSVReader(os.path.join(data_path, "Data1000Movies.csv"))
     movie_file_reader.read_csv_file()
 
     for movie in movie_file_reader.dataset_of_movies:
@@ -332,10 +365,5 @@ def populate(data_path: str, repo: MemoryRepository):
     # Load movies into the repository
     load_movies(data_path, repo)
 
-
-"""new_repo = MemoryRepository()
-c_path = os.path.abspath("data/Data1000Movies.csv")
-
-populate(c_path, new_repo)
-movie = new_repo.get_movies_by_date(2006)
-print(movie)"""
+    # Load movies into the repository
+    load_users(data_path, repo)

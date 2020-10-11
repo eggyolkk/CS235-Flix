@@ -3,7 +3,7 @@
 {% block content %}
 
 <main id="main">
-    <header id="article-header">
+    <header id="movies-header">
     </header>
 
     <button class="btn-general" onclick="location.href='{{first_movie_url}}'">Refresh</button>
@@ -22,7 +22,7 @@
     </div>
 
     {% for movie in movies %}
-    <movie id="article">
+    <movie id="movie">
         <h2>{{movie.title}}</h2>
         <p>{{movie.date}}</p>
     </movie>

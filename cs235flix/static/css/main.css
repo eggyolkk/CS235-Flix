@@ -221,26 +221,15 @@ img {
     border-bottom: 1px solid #e0e4e8;
 }
 
-#article-header {
+#movie-header {
     text-align: left;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-#article {
+#movie {
     clear:both;
     margin-bottom:100px;
-}
-
-#article-footer {
-    font-size: 32px;
-}
-
-#article-container {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 30px;
 }
 
 .movie-content h1, h2{

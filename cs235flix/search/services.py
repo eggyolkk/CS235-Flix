@@ -1,5 +1,5 @@
 from cs235flix.adapters.repository import AbstractRepository
-from cs235flix.domain.model import Movie, make_review, Review
+from cs235flix.domain.model import Movie, Review
 from typing import Iterable
 
 
@@ -9,23 +9,6 @@ class NonExistentMovieException(Exception):
 
 class UnknownUserException(Exception):
     pass
-
-
-def add_review(movie_rank: int, review_text: str, username: str, repo: AbstractRepository):
-    # Check that the movie exists.
-    movie = repo.get_movie(movie_rank)
-    if movie is None:
-        raise NonExistentMovieException
-
-    user = repo.get_user(username)
-    if user is None:
-        raise UnknownUserException
-
-    # Create review.
-    review = make_review(review_text, user, movie)
-
-    # Update the repository.
-    repo.add_review(review)
 
 
 def set_search(search: str, repo: AbstractRepository):

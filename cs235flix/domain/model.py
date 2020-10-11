@@ -1,5 +1,6 @@
-from datetime import date, datetime
+from datetime import datetime
 from typing import List, Iterable
+
 
 class Actor:
 
@@ -25,7 +26,7 @@ class Actor:
     def __lt__(self, other) -> bool:
         return self.__actor_full_name < other.__actor_full_name
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         return hash(self.__actor_full_name)
 
     def add_actor_colleague(self, colleague):
@@ -59,7 +60,7 @@ class Genre:
     def __lt__(self, other) -> bool:
         return self._genre_name < other._genre_name
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         return hash(self._genre_name)
 
 
@@ -85,8 +86,8 @@ class Director:
     def __lt__(self, other) -> bool:
         return self.__director_full_name < other.director_full_name
 
-    def __hash__(self) -> str:
-        return hash(self._director_full_name)
+    def __hash__(self) -> int:
+        return hash(self.__director_full_name)
 
 
 class User:
@@ -122,8 +123,13 @@ class User:
 
 
 class Review:
-    def __init__(self, user: User, movie: 'Movie', review_text: str, timestamp: datetime):
+    def __init__(self, user: User, movie: 'Movie', review_text: str, rating: int, timestamp: datetime):
         self.__movie: Movie = movie
+
+        if 1 <= rating <= 10:
+            self.__rating: int = int(rating)
+        else:
+            self.__rating = "N/A"
 
         self.__user: User = user
         self.__review_text: str = review_text
@@ -141,9 +147,9 @@ class Review:
     def review_text(self) -> str:
         return self.__review_text
 
-    """@property
-    def rating(self) -> int:
-        return self.__rating"""
+    @property
+    def rating(self):
+        return self.__rating
 
     @property
     def timestamp(self) -> datetime:
@@ -161,22 +167,22 @@ class Review:
 
 
 class Movie:
-    def __init__(self, movie_title: str, release_date: int, rank: int, description: str, director: Director, actors: [],
+    def __init__(self, movie_title: str, release_date: int, rank: str, description: str, director: str, actors: [],
                  genres: []):
         if movie_title == "" or type(movie_title) is not str:
             self.__movie_title = None
         else:
             self.__movie_title: str = movie_title.strip()
 
-        self.__rank: int = rank
+        self.__rank: int = int(rank)
         self.__release_date: int = release_date
         self.__description: str = description
         self.__director: Director = Director(director)
         self.__actors: list = actors
         self.__genres: list = genres
-        self.__runtime_minutes: int = None
+        self.__runtime_minutes: int = 0
         self.__reviews: List[Review] = list()
-        self.__poster: str = None
+        self.__poster: str = ""
 
     @property
     def rank(self) -> int:
@@ -187,7 +193,7 @@ class Movie:
         return self.__movie_title
 
     @property
-    def release_date(self) -> int:
+    def release_date(self) -> str:
         return str(self.__release_date)
 
     @property
@@ -266,7 +272,7 @@ class Movie:
         else:
             return False
 
-    def __hash__(self) -> str:
+    def __hash__(self) -> int:
         unique_movie = str(self.__movie_title) + str(self.__release_date)
         return hash(unique_movie)
 
@@ -358,8 +364,8 @@ class WatchList:
             return movie
 
 
-def make_review(review_text: str, user: User, movie: Movie, timestamp: datetime = datetime.today()):
-    review = Review(user, movie, review_text, timestamp)
+def make_review(review_text: str, user: User, movie: Movie, rating: int, timestamp: datetime = datetime.today()):
+    review = Review(user, movie, review_text, rating, timestamp)
     user.add_review(review)
     movie.add_review(review)
 

@@ -5,7 +5,7 @@ from flask import request, render_template, redirect, url_for, session
 
 from better_profanity import profanity
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, HiddenField, SubmitField
+from wtforms import TextAreaField, HiddenField, SubmitField, IntegerField
 from wtforms.validators import DataRequired, Length, ValidationError
 
 import cs235flix.adapters.repository as repo
@@ -84,12 +84,6 @@ def review_on_movie():
     # Obtain the username of the currently logged in user.
     username = session['username']
 
-    # Read query parameters
-    cursor = request.args.get('cursor')
-    starting_cursor = request.args.get('starting_cursor')
-    max_cursor = request.args.get('max_cursor')
-    prev_cursor = request.args.get('prev_cursor')
-
     # Create form. The form maintains state, e.g. when this method is called with a HTTP GET request and populates
     # the form with a movie rank, when subsequently called with a HTTP POST request, the movie rank remains in the
     # form.
@@ -97,17 +91,21 @@ def review_on_movie():
 
     if form.validate_on_submit():
         # Successful POST, i.e. the review text has passed data validation.
-        # Extract the movie rank, representing the reviewed movie, from the form.
+        # Extract the movie rank and rating, representing the reviewed movie, from the form.
         movie_rank = int(form.movie_rank.data)
+        if form.rating.data is not None:
+            rating = int(form.rating.data)
+        else:
+            rating = form.rating.data
+
         get_search = form.search_data.data
         get_search_cursor = form.search_cursor_data.data
-        get_search_page = form.search_page_data.data
         get_search_type = form.search_type.data
         get_year_cursor = form.year_cursor.data
         get_year_max_cursor = form.year_max_cursor.data
 
         # Use the service layer to store the new review.
-        services.add_review(movie_rank, form.review.data, username, repo.repo_instance)
+        services.add_review(movie_rank, form.review.data, username, form.rating.data, repo.repo_instance)
 
         # Retrieve the movie in dict form.
         movie = services.get_movie(movie_rank, repo.repo_instance)
@@ -125,8 +123,9 @@ def review_on_movie():
 
     if request.method == 'GET':
         # Request is a HTTP GET to display the form.
-        # Extract the movie rank, representing the movie to review, from a query parameter of the GET request.
+        # Extract the movie rank (and rating), representing the movie to review, from a query parameter of the GET request.
         movie_rank = int(request.args.get('movie'))
+
         search_page = request.args.get('search_page')
         search = request.args.get('search')
         search_cursor = request.args.get('search_cursor')
@@ -257,6 +256,7 @@ def add_to_watchlist():
 
     search_movies = []
     movie_batch = dict()
+    years_dict = dict()
 
     # Add movie to the user's watchlist.
     services.add_to_watchlist(int(movie_rank), repo.repo_instance)
@@ -343,8 +343,8 @@ def movies_by_date_helper(cursor: int, starting_cursor: int, max_cursor: int, pr
         prev_cursor = int(prev_cursor)
 
     # Fetch the first and last movies in the series
-    first_movie = services.get_first_movie(repo.repo_instance)
-    last_movie = services.get_last_movie(repo.repo_instance)
+    first_movie = services.get_first_date(repo.repo_instance)
+    last_movie = services.get_last_date(repo.repo_instance)
 
     if target_date is None:
         # No date query parameter, so return movies from earliest movie release date.
@@ -469,6 +469,8 @@ class ReviewForm(FlaskForm):
         DataRequired(),
         Length(min=4, message='Your review is too short.'),
         ProfanityFree(message='Your review must not contain profanity')])
+
+    rating = IntegerField('Please give a rating out of 10.')
 
     movie_rank = HiddenField("Movie rank")
     search_data = HiddenField("Search")
